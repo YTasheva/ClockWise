@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 function Totals({ refreshKey }) {
   const [totals, setTotals] = useState(null);
@@ -11,21 +11,21 @@ function Totals({ refreshKey }) {
   const fetchTotals = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/totals');
+      const response = await fetch("/api/totals");
       const data = await response.json();
       setTotals(data);
     } catch (error) {
-      console.error('Error fetching totals:', error);
+      console.error("Error fetching totals:", error);
     } finally {
       setLoading(false);
     }
   };
 
   const formatDuration = (minutes) => {
-    if (!minutes) return '00:00';
+    if (!minutes) return "00:00";
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
-    return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+    return `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}`;
   };
 
   if (loading) {
@@ -36,7 +36,10 @@ function Totals({ refreshKey }) {
     return <div className="no-data">Unable to load totals</div>;
   }
 
-  const hasData = totals.byTask?.length > 0 || totals.byProject?.length > 0 || totals.byTaskPerProject?.length > 0;
+  const hasData =
+    totals.byTask?.length > 0 ||
+    totals.byProject?.length > 0 ||
+    totals.byTaskPerProject?.length > 0;
 
   if (!hasData) {
     return <div className="no-data">No time entries recorded yet</div>;
@@ -53,14 +56,17 @@ function Totals({ refreshKey }) {
               <thead>
                 <tr>
                   <th>Task</th>
-                  <th style={{ textAlign: 'right' }}>Time</th>
+                  <th style={{ textAlign: "right" }}>Time</th>
                 </tr>
               </thead>
               <tbody>
-                {totals.byTask.map(item => (
+                {totals.byTask.map((item) => (
                   <tr key={item.id}>
                     <td>{item.name}</td>
-                    <td style={{ textAlign: 'right' }} className="duration-cell">
+                    <td
+                      style={{ textAlign: "right" }}
+                      className="duration-cell"
+                    >
                       {formatDuration(item.total_minutes)}
                     </td>
                   </tr>
@@ -78,14 +84,17 @@ function Totals({ refreshKey }) {
               <thead>
                 <tr>
                   <th>Project</th>
-                  <th style={{ textAlign: 'right' }}>Time</th>
+                  <th style={{ textAlign: "right" }}>Time</th>
                 </tr>
               </thead>
               <tbody>
-                {totals.byProject.map(item => (
+                {totals.byProject.map((item) => (
                   <tr key={item.id}>
                     <td>{item.name}</td>
-                    <td style={{ textAlign: 'right' }} className="duration-cell">
+                    <td
+                      style={{ textAlign: "right" }}
+                      className="duration-cell"
+                    >
                       {formatDuration(item.total_minutes)}
                     </td>
                   </tr>
@@ -104,7 +113,7 @@ function Totals({ refreshKey }) {
                 <tr>
                   <th>Project</th>
                   <th>Task</th>
-                  <th style={{ textAlign: 'right' }}>Time</th>
+                  <th style={{ textAlign: "right" }}>Time</th>
                 </tr>
               </thead>
               <tbody>
@@ -112,7 +121,10 @@ function Totals({ refreshKey }) {
                   <tr key={idx}>
                     <td>{item.project_name}</td>
                     <td>{item.task_name}</td>
-                    <td style={{ textAlign: 'right' }} className="duration-cell">
+                    <td
+                      style={{ textAlign: "right" }}
+                      className="duration-cell"
+                    >
                       {formatDuration(item.total_minutes)}
                     </td>
                   </tr>
