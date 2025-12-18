@@ -2,22 +2,22 @@
 export function getTodayDate() {
   const now = new Date();
   const hour = now.getHours();
-  
+
   // If before 4 AM, use yesterday's date
   if (hour < 4) {
     const yesterday = new Date(now);
     yesterday.setDate(yesterday.getDate() - 1);
-    return yesterday.toISOString().split('T')[0];
+    return yesterday.toISOString().split("T")[0];
   }
-  
-  return now.toISOString().split('T')[0];
+
+  return now.toISOString().split("T")[0];
 }
 
 // Get current time with 4 AM boundary offset
 export function getCurrentTimeWithBoundary() {
   const now = new Date();
   const hour = now.getHours();
-  
+
   // If before 4 AM, use yesterday's date
   if (hour < 4) {
     const yesterday = new Date(now);
@@ -25,7 +25,7 @@ export function getCurrentTimeWithBoundary() {
     yesterday.setHours(4, 0, 0, 0);
     return yesterday;
   }
-  
+
   return now;
 }
 
@@ -48,5 +48,5 @@ export function isValidDuration(startTime, endTime) {
 export function formatDuration(minutes) {
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;
-  return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+  return `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}`;
 }
