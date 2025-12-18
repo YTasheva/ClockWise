@@ -1,4 +1,36 @@
-# ClockWise
+<h1 align="center">ClockWise</h1>
+  <br>
+  <a href="https://github.com/ytasheva">
+      <img src="https://img.shields.io/badge/SayThanks.io-%E2%98%BC-1EAEDB.svg?style=for-the-badge" alt=""></a>
+  <a href="https://github.com/ytasheva/ClockWise/graphs/contributors">
+      <img src="https://img.shields.io/github/contributors/ytasheva/ClockWise.svg?style=for-the-badge" alt=""></a>
+  <a href="https://github.com/ytasheva/ClockWise/issues">
+      <img src="https://img.shields.io/github/issues/ytasheva/ClockWise.svg?style=for-the-badge" alt=""></a>
+  <a href="https://github.com/ytasheva/ClockWise/network/members">
+      <img src="https://img.shields.io/github/forks/ytasheva/ClockWise.svg?style=for-the-badge" alt=""></a>
+
+## Table of contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [Quick Start](#quick-start)
+  - [Prerequisites](#prerequisites)
+  - [Installation & Setup](#installation-&-setup)
+  - [Running the Application](#running-the-application)
+- [How to Use](#how-to-use)
+  - [Setup Your Projects and Tasks](#setup-your-projects-and-tasks)
+  - [Track Time](#track-time)
+  - [Quick Task Switching](#quick-task-switching)
+  - [View Daily Totals](#view-daily-totals)
+- [Data Storage](#data-storage)
+- [Time Tracking Rules](#time-tracking-rules)
+- [Architecture](#architecture)
+- [Project Structure](#project-structure)
+- [Development](#development)
+- [Licence](#licence)
+- [Authors](#authors)
+
+## Overview
 
 A web-based time tracking application that helps you keep track of how much time you spend on tasks during your working day.
 
@@ -143,4 +175,15 @@ To work on the application:
 
 ## License
 
-MIT License - See LICENSE file for details
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## Authors
+
+- GitHub - [YTasheva](https://github.com/YTasheva) | [Yuliya Tasheva](https://github.com/YTasheva)
+- For any questions, suggestions, or issues, please contact our team at
+  
+> Email [ytashevagit@gmail.com](#) &nbsp;&middot;&nbsp;
+> Copyright &copy; 2025 All Rights Reserved. Site By Yuliya Tasheva&reg;
+
+**Thank you for using and contributing to the ClockWise app! Your support helps us continually improve and deliver the best shipping management experience.**
