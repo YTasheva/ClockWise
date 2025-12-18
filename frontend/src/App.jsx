@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import ProjectManager from './components/ProjectManager';
-import TaskManager from './components/TaskManager';
-import Timer from './components/Timer';
-import Totals from './components/Totals';
-import TimesheetExport from './components/TimesheetExport';
+import React, { useState, useEffect } from "react";
+import ProjectManager from "./components/ProjectManager";
+import TaskManager from "./components/TaskManager";
+import Timer from "./components/Timer";
+import Totals from "./components/Totals";
+import TimesheetExport from "./components/TimesheetExport";
 
 function App() {
   const [projects, setProjects] = useState([]);
@@ -16,14 +16,14 @@ function App() {
 
   // Fetch projects
   useEffect(() => {
-    console.log('useEffect: fetching projects');
+    console.log("useEffect: fetching projects");
     fetchProjects();
   }, []);
 
   // Set default project (No Project)
   useEffect(() => {
     if (projects.length > 0 && !activeProject) {
-      const noProject = projects.find(p => p.is_builtin);
+      const noProject = projects.find((p) => p.is_builtin);
       setActiveProject(noProject);
     }
   }, [projects]);
@@ -42,34 +42,34 @@ function App() {
 
   const fetchProjects = async () => {
     try {
-      console.log('Fetching projects from /api/projects');
-      const response = await fetch('/api/projects');
+      console.log("Fetching projects from /api/projects");
+      const response = await fetch("/api/projects");
       const data = await response.json();
-      console.log('Projects fetched:', data);
+      console.log("Projects fetched:", data);
       setProjects(data);
     } catch (error) {
-      console.error('Error fetching projects:', error);
-      setError('Failed to load projects: ' + error.message);
+      console.error("Error fetching projects:", error);
+      setError("Failed to load projects: " + error.message);
     }
   };
 
   const fetchTasks = async () => {
     try {
-      const response = await fetch('/api/tasks');
+      const response = await fetch("/api/tasks");
       const data = await response.json();
       setTasks(data);
     } catch (error) {
-      console.error('Error fetching tasks:', error);
+      console.error("Error fetching tasks:", error);
     }
   };
 
   const fetchCurrentTimer = async () => {
     try {
-      const response = await fetch('/api/timer/current');
+      const response = await fetch("/api/timer/current");
       const data = await response.json();
       setCurrentTimer(data);
     } catch (error) {
-      console.error('Error fetching current timer:', error);
+      console.error("Error fetching current timer:", error);
     }
   };
 
@@ -79,7 +79,7 @@ function App() {
 
   const handleProjectDeleted = () => {
     fetchProjects();
-    setRefreshTotals(prev => prev + 1);
+    setRefreshTotals((prev) => prev + 1);
   };
 
   const handleTaskAdded = () => {
@@ -88,7 +88,7 @@ function App() {
 
   const handleTaskDeleted = () => {
     fetchTasks();
-    setRefreshTotals(prev => prev + 1);
+    setRefreshTotals((prev) => prev + 1);
   };
 
   const handleTimerStarted = () => {
@@ -97,7 +97,7 @@ function App() {
 
   const handleTimerEnded = () => {
     fetchCurrentTimer();
-    setRefreshTotals(prev => prev + 1);
+    setRefreshTotals((prev) => prev + 1);
   };
 
   return (
@@ -114,7 +114,7 @@ function App() {
         <div className="container-lg">
           <section className="section projects-section">
             <h2>Projects</h2>
-            <ProjectManager 
+            <ProjectManager
               projects={projects}
               activeProject={activeProject}
               onProjectSelect={setActiveProject}
@@ -125,7 +125,7 @@ function App() {
 
           <section className="section tasks-section">
             <h2>Tasks</h2>
-            <TaskManager 
+            <TaskManager
               tasks={tasks}
               projects={projects}
               activeProject={activeProject}
@@ -137,7 +137,7 @@ function App() {
           </section>
 
           <section className="section timer-section">
-            <Timer 
+            <Timer
               currentTimer={currentTimer}
               activeTask={activeTask}
               activeProject={activeProject}
@@ -148,7 +148,14 @@ function App() {
           </section>
 
           <section className="section totals-section">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "1rem",
+              }}
+            >
               <h2 style={{ margin: 0 }}>Daily Totals</h2>
               <TimesheetExport />
             </div>
