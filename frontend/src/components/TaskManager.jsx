@@ -1,95 +1,103 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-function TaskManager({ tasks, projects, activeProject, activeTask, onTaskSelect, onTaskAdded, onTaskDeleted }) {
-  const [newTaskName, setNewTaskName] = useState('');
-  const [error, setError] = useState('');
+function TaskManager({
+  tasks,
+  projects,
+  activeProject,
+  activeTask,
+  onTaskSelect,
+  onTaskAdded,
+  onTaskDeleted,
+}) {
+  const [newTaskName, setNewTaskName] = useState("");
+  const [error, setError] = useState("");
   const [editingId, setEditingId] = useState(null);
-  const [editName, setEditName] = useState('');
+  const [editName, setEditName] = useState("");
 
   const handleAddTask = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     if (!newTaskName.trim()) {
-      setError('Task name cannot be empty');
+      setError("Task name cannot be empty");
       return;
     }
 
     if (newTaskName.length > 50) {
-      setError('Task name cannot exceed 50 characters');
+      setError("Task name cannot exceed 50 characters");
       return;
     }
 
     try {
-      const response = await fetch('/api/tasks', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: newTaskName })
+      const response = await fetch("/api/tasks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: newTaskName }),
       });
 
       if (!response.ok) {
         const data = await response.json();
-        setError(data.error || 'Failed to add task');
+        setError(data.error || "Failed to add task");
         return;
       }
 
-      setNewTaskName('');
+      setNewTaskName("");
       onTaskAdded();
     } catch (err) {
-      setError('Error adding task: ' + err.message);
+      setError("Error adding task: " + err.message);
     }
   };
 
   const handleEditTask = async (id, newName) => {
-    setError('');
+    setError("");
 
     if (!newName.trim()) {
-      setError('Task name cannot be empty');
+      setError("Task name cannot be empty");
       return;
     }
 
     if (newName.length > 50) {
-      setError('Task name cannot exceed 50 characters');
+      setError("Task name cannot exceed 50 characters");
       return;
     }
 
     try {
       const response = await fetch(`/api/tasks/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: newName })
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: newName }),
       });
 
       if (!response.ok) {
         const data = await response.json();
-        setError(data.error || 'Failed to update task');
+        setError(data.error || "Failed to update task");
         return;
       }
 
       setEditingId(null);
       onTaskAdded(); // Refresh tasks
     } catch (err) {
-      setError('Error updating task: ' + err.message);
+      setError("Error updating task: " + err.message);
     }
   };
 
   const handleDeleteTask = async (id) => {
-    if (!confirm('Are you sure you want to delete this task?')) return;
+    if (!confirm("Are you sure you want to delete this task?")) return;
 
-    setError('');
+    setError("");
 
     try {
-      const response = await fetch(`/api/tasks/${id}`, { method: 'DELETE' });
+      const response = await fetch(`/api/tasks/${id}`, { method: "DELETE" });
 
       if (!response.ok) {
         const data = await response.json();
-        setError(data.error || 'Failed to delete task');
+        setError(data.error || "Failed to delete task");
         return;
       }
 
       onTaskDeleted();
     } catch (err) {
-      setError('Error deleting task: ' + err.message);
+      setError("Error deleting task: " + err.message);
     }
   };
 
@@ -99,34 +107,40 @@ function TaskManager({ tasks, projects, activeProject, activeTask, onTaskSelect,
 
       <ul className="task-list">
         {tasks.length === 0 ? (
-          <li className="no-data">
-            No tasks yet. Add one below.
-          </li>
+          <li className="no-data">No tasks yet. Add one below.</li>
         ) : (
-          tasks.map(task => (
-            <li key={task.id} className={`task-item ${activeTask?.id === task.id ? 'active' : ''}`}>
-              <div style={{ flex: 1, cursor: 'pointer' }} onClick={() => onTaskSelect(task)}>
+          tasks.map((task) => (
+            <li
+              key={task.id}
+              className={`task-item ${
+                activeTask?.id === task.id ? "active" : ""
+              }`}
+            >
+              <div
+                style={{ flex: 1, cursor: "pointer" }}
+                onClick={() => onTaskSelect(task)}
+              >
                 {editingId === task.id ? (
                   <input
                     type="text"
                     value={editName}
                     onChange={(e) => setEditName(e.target.value)}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') handleEditTask(task.id, editName);
-                      if (e.key === 'Escape') setEditingId(null);
+                      if (e.key === "Enter") handleEditTask(task.id, editName);
+                      if (e.key === "Escape") setEditingId(null);
                     }}
                     onBlur={() => handleEditTask(task.id, editName)}
                     onClick={(e) => e.stopPropagation()}
                     autoFocus
                     className="form-control"
-                    style={{ maxWidth: '300px' }}
+                    style={{ maxWidth: "300px" }}
                   />
                 ) : (
                   <strong>{task.name}</strong>
                 )}
               </div>
               <div className="task-actions">
-                <button 
+                <button
                   className="task-edit-btn"
                   onClick={() => {
                     setEditingId(task.id);
@@ -135,7 +149,7 @@ function TaskManager({ tasks, projects, activeProject, activeTask, onTaskSelect,
                 >
                   Edit
                 </button>
-                <button 
+                <button
                   className="task-delete-btn"
                   onClick={() => handleDeleteTask(task.id)}
                 >
@@ -156,7 +170,9 @@ function TaskManager({ tasks, projects, activeProject, activeTask, onTaskSelect,
           maxLength="50"
           className="form-control"
         />
-        <button type="submit" className="btn btn-primary">Add Task</button>
+        <button type="submit" className="btn btn-primary">
+          Add Task
+        </button>
       </form>
     </div>
   );
