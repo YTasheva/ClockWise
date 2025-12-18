@@ -1,4 +1,13 @@
-# ClockWise
+<h1 align="center">ClockWise</h1>
+  <br>
+  <a href="https://github.com/ytasheva">
+      <img src="https://img.shields.io/badge/SayThanks.io-%E2%98%BC-1EAEDB.svg?style=for-the-badge" alt=""></a>
+  <a href="https://github.com/ytasheva/ClockWise/graphs/contributors">
+      <img src="https://img.shields.io/github/contributors/ytasheva/ClockWise.svg?style=for-the-badge" alt=""></a>
+  <a href="https://github.com/ytasheva/ClockWise/issues">
+      <img src="https://img.shields.io/github/issues/ytasheva/ClockWise.svg?style=for-the-badge" alt=""></a>
+  <a href="https://github.com/ytasheva/ClockWise/network/members">
+      <img src="https://img.shields.io/github/forks/ytasheva/ClockWise.svg?style=for-the-badge" alt=""></a>
 
 A web-based time tracking application that helps you keep track of how much time you spend on tasks during your working day.
 
