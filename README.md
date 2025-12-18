@@ -175,4 +175,15 @@ To work on the application:
 
 ## License
 
-MIT License - See LICENSE file for details
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## Authors
+
+- GitHub - [YTasheva](https://github.com/YTasheva) | [Yuliya Tasheva](https://github.com/YTasheva)
+- For any questions, suggestions, or issues, please contact our team at
+  
+> Email [ytashevagit@gmail.com](#) &nbsp;&middot;&nbsp;
+> Copyright &copy; 2025 All Rights Reserved. Site By Yuliya Tasheva&reg;
+
+**Thank you for using and contributing to the ClockWise app! Your support helps us continually improve and deliver the best shipping management experience.**
