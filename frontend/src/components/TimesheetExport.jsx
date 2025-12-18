@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import React, { useState } from "react";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 function TimesheetExport() {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const formatDuration = (minutes) => {
-    if (!minutes) return '00:00';
+    if (!minutes) return "00:00";
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
-    return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+    return `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}`;
   };
 
   const getTodayDate = () => {
@@ -19,22 +19,22 @@ function TimesheetExport() {
     if (now.getHours() < 4) {
       now.setDate(now.getDate() - 1);
     }
-    return now.toISOString().split('T')[0];
+    return now.toISOString().split("T")[0];
   };
 
   const generatePDF = async () => {
     try {
       setLoading(true);
-      setError('');
+      setError("");
 
       // Fetch all necessary data
       const [totalsRes, entriesRes] = await Promise.all([
-        fetch('/api/totals'),
-        fetch('/api/timesheet/entries')
+        fetch("/api/totals"),
+        fetch("/api/timesheet/entries"),
       ]);
 
       if (!totalsRes.ok || !entriesRes.ok) {
-        throw new Error('Failed to fetch timesheet data');
+        throw new Error("Failed to fetch timesheet data");
       }
 
       const totals = await totalsRes.json();
@@ -43,17 +43,20 @@ function TimesheetExport() {
       // Create PDF
       const doc = new jsPDF();
       const today = getTodayDate();
-      const dateStr = new Date(today + 'T00:00:00').toLocaleDateString('en-US', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      });
+      const dateStr = new Date(today + "T00:00:00").toLocaleDateString(
+        "en-US",
+        {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        }
+      );
 
       // Title
       doc.setFontSize(18);
-      doc.text('Daily Timesheet', 14, 15);
-      
+      doc.text("Daily Timesheet", 14, 15);
+
       doc.setFontSize(11);
       doc.setTextColor(100);
       doc.text(`Date: ${dateStr}`, 14, 25);
@@ -64,32 +67,32 @@ function TimesheetExport() {
       if (totals.byTaskPerProject && totals.byTaskPerProject.length > 0) {
         doc.setFontSize(12);
         doc.setTextColor(0);
-        doc.text('Time by Task per Project', 14, yPosition);
+        doc.text("Time by Task per Project", 14, yPosition);
         yPosition += 8;
 
-        const byTaskPerProjectData = totals.byTaskPerProject.map(item => [
+        const byTaskPerProjectData = totals.byTaskPerProject.map((item) => [
           item.project_name,
           item.task_name,
-          formatDuration(item.total_minutes)
+          formatDuration(item.total_minutes),
         ]);
 
         autoTable(doc, {
-          head: [['Project', 'Task', 'Time']],
+          head: [["Project", "Task", "Time"]],
           body: byTaskPerProjectData,
           startY: yPosition,
           margin: { left: 14, right: 14 },
-          theme: 'grid',
+          theme: "grid",
           headerStyles: {
             fillColor: [13, 110, 253],
             textColor: 255,
-            fontStyle: 'bold'
+            fontStyle: "bold",
           },
           alternateRowStyles: {
-            fillColor: [240, 242, 245]
+            fillColor: [240, 242, 245],
           },
           didDrawPage: (data) => {
             yPosition = data.lastAutoTable.finalY + 5;
-          }
+          },
         });
 
         yPosition = doc.lastAutoTable.finalY + 10;
@@ -99,31 +102,31 @@ function TimesheetExport() {
       if (totals.byProject && totals.byProject.length > 0) {
         doc.setFontSize(12);
         doc.setTextColor(0);
-        doc.text('Total Time by Project', 14, yPosition);
+        doc.text("Total Time by Project", 14, yPosition);
         yPosition += 8;
 
-        const byProjectData = totals.byProject.map(item => [
+        const byProjectData = totals.byProject.map((item) => [
           item.name,
-          formatDuration(item.total_minutes)
+          formatDuration(item.total_minutes),
         ]);
 
         autoTable(doc, {
-          head: [['Project', 'Total Time']],
+          head: [["Project", "Total Time"]],
           body: byProjectData,
           startY: yPosition,
           margin: { left: 14, right: 14 },
-          theme: 'grid',
+          theme: "grid",
           headerStyles: {
             fillColor: [25, 135, 84],
             textColor: 255,
-            fontStyle: 'bold'
+            fontStyle: "bold",
           },
           alternateRowStyles: {
-            fillColor: [240, 245, 242]
+            fillColor: [240, 245, 242],
           },
           didDrawPage: (data) => {
             yPosition = data.lastAutoTable.finalY + 5;
-          }
+          },
         });
 
         yPosition = doc.lastAutoTable.finalY + 10;
@@ -133,31 +136,31 @@ function TimesheetExport() {
       if (totals.byTask && totals.byTask.length > 0) {
         doc.setFontSize(12);
         doc.setTextColor(0);
-        doc.text('Total Time by Task', 14, yPosition);
+        doc.text("Total Time by Task", 14, yPosition);
         yPosition += 8;
 
-        const byTaskData = totals.byTask.map(item => [
+        const byTaskData = totals.byTask.map((item) => [
           item.name,
-          formatDuration(item.total_minutes)
+          formatDuration(item.total_minutes),
         ]);
 
         autoTable(doc, {
-          head: [['Task', 'Total Time']],
+          head: [["Task", "Total Time"]],
           body: byTaskData,
           startY: yPosition,
           margin: { left: 14, right: 14 },
-          theme: 'grid',
+          theme: "grid",
           headerStyles: {
             fillColor: [13, 202, 240],
             textColor: 0,
-            fontStyle: 'bold'
+            fontStyle: "bold",
           },
           alternateRowStyles: {
-            fillColor: [240, 248, 255]
+            fillColor: [240, 248, 255],
           },
           didDrawPage: (data) => {
             yPosition = data.lastAutoTable.finalY + 5;
-          }
+          },
         });
 
         yPosition = doc.lastAutoTable.finalY + 10;
@@ -167,43 +170,50 @@ function TimesheetExport() {
       if (entries && entries.length > 0) {
         doc.setFontSize(12);
         doc.setTextColor(0);
-        doc.text('Time Entries (Chronological)', 14, yPosition);
+        doc.text("Time Entries (Chronological)", 14, yPosition);
         yPosition += 8;
 
-        const entriesData = entries.map(entry => {
-          const startTime = new Date(entry.start_time).toLocaleTimeString('en-US', {
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit'
-          });
-          const endTime = entry.end_time ? new Date(entry.end_time).toLocaleTimeString('en-US', {
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit'
-          }) : 'In Progress';
+        const entriesData = entries.map((entry) => {
+          const startTime = new Date(entry.start_time).toLocaleTimeString(
+            "en-US",
+            {
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit",
+            }
+          );
+          const endTime = entry.end_time
+            ? new Date(entry.end_time).toLocaleTimeString("en-US", {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+              })
+            : "In Progress";
 
           return [
             entry.task_name,
             startTime,
             endTime,
-            entry.duration_minutes ? formatDuration(entry.duration_minutes) : 'N/A'
+            entry.duration_minutes
+              ? formatDuration(entry.duration_minutes)
+              : "N/A",
           ];
         });
 
         autoTable(doc, {
-          head: [['Task', 'Start Time', 'End Time', 'Duration']],
+          head: [["Task", "Start Time", "End Time", "Duration"]],
           body: entriesData,
           startY: yPosition,
           margin: { left: 14, right: 14 },
-          theme: 'grid',
+          theme: "grid",
           headerStyles: {
             fillColor: [220, 53, 69],
             textColor: 255,
-            fontStyle: 'bold'
+            fontStyle: "bold",
           },
           alternateRowStyles: {
-            fillColor: [255, 248, 247]
-          }
+            fillColor: [255, 248, 247],
+          },
         });
       }
 
@@ -213,7 +223,7 @@ function TimesheetExport() {
 
       setLoading(false);
     } catch (err) {
-      setError('Error generating PDF: ' + err.message);
+      setError("Error generating PDF: " + err.message);
       setLoading(false);
     }
   };
@@ -226,7 +236,7 @@ function TimesheetExport() {
         onClick={generatePDF}
         disabled={loading}
       >
-        {loading ? 'Generating PDF...' : '📄 Export Daily Timesheet'}
+        {loading ? "Generating PDF..." : "📄 Export Daily Timesheet"}
       </button>
     </div>
   );
