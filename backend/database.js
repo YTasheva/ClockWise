@@ -1,10 +1,15 @@
-import sqlite3 from 'sqlite3';
-import path from 'path';
-import os from 'os';
-import fs from 'fs';
+import sqlite3 from "sqlite3";
+import path from "path";
+import os from "os";
+import fs from "fs";
 
-const DB_DIR = path.join(os.homedir(), 'Library', 'Application Support', 'ClockWise');
-const DB_PATH = path.join(DB_DIR, 'clockwise.db');
+const DB_DIR = path.join(
+  os.homedir(),
+  "Library",
+  "Application Support",
+  "ClockWise"
+);
+const DB_PATH = path.join(DB_DIR, "clockwise.db");
 
 // Ensure directory exists
 if (!fs.existsSync(DB_DIR)) {
@@ -13,66 +18,73 @@ if (!fs.existsSync(DB_DIR)) {
 
 const db = new sqlite3.Database(DB_PATH, (err) => {
   if (err) {
-    console.error('Database connection error:', err);
+    console.error("Database connection error:", err);
   } else {
-    console.log('Connected to SQLite database at:', DB_PATH);
+    console.log("Connected to SQLite database at:", DB_PATH);
   }
 });
 
 // Enable foreign keys
-db.run('PRAGMA foreign_keys = ON');
+db.run("PRAGMA foreign_keys = ON");
 
 export function initializeDatabase() {
   return new Promise((resolve, reject) => {
     db.serialize(() => {
       // Drop old tables if they exist (for migration)
-      db.run('DROP TABLE IF EXISTS time_entries', (err) => {
-        if (err) console.log('Dropping time_entries:', err);
+      db.run("DROP TABLE IF EXISTS time_entries", (err) => {
+        if (err) console.log("Dropping time_entries:", err);
       });
-      db.run('DROP TABLE IF EXISTS task_projects', (err) => {
-        if (err) console.log('Dropping task_projects:', err);
+      db.run("DROP TABLE IF EXISTS task_projects", (err) => {
+        if (err) console.log("Dropping task_projects:", err);
       });
-      db.run('DROP TABLE IF EXISTS tasks', (err) => {
-        if (err) console.log('Dropping tasks:', err);
+      db.run("DROP TABLE IF EXISTS tasks", (err) => {
+        if (err) console.log("Dropping tasks:", err);
       });
-      db.run('DROP TABLE IF EXISTS projects', (err) => {
-        if (err) console.log('Dropping projects:', err);
+      db.run("DROP TABLE IF EXISTS projects", (err) => {
+        if (err) console.log("Dropping projects:", err);
       });
 
       // Projects table
-      db.run(`
+      db.run(
+        `
         CREATE TABLE IF NOT EXISTS projects (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           name TEXT NOT NULL UNIQUE,
           is_builtin INTEGER DEFAULT 0,
           created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )
-      `, (err) => {
-        if (err) reject(err);
-      });
+      `,
+        (err) => {
+          if (err) reject(err);
+        }
+      );
 
       // Create built-in "No Project" if it doesn't exist
       db.run(
         `INSERT OR IGNORE INTO projects (name, is_builtin) VALUES (?, 1)`,
-        ['No Project'],
+        ["No Project"],
         (err) => {
           if (err) reject(err);
         }
       );
 
       // Tasks table (no project_id - tasks are independent)
-      db.run(`
+      db.run(
+        `
         CREATE TABLE IF NOT EXISTS tasks (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           name TEXT NOT NULL UNIQUE,
           created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )
-      `, (err) => {
-        if (err) reject(err);
-      });
+      `,
+        (err) => {
+          if (err) reject(err);
+        }
+      );
 
       // Task-Project junction table (many-to-many)
-      db.run(`
+      db.run(
+        `
         CREATE TABLE IF NOT EXISTS task_projects (
           task_id INTEGER NOT NULL,
           project_id INTEGER NOT NULL,
@@ -80,12 +92,15 @@ export function initializeDatabase() {
           FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE,
           FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
         )
-      `, (err) => {
-        if (err) reject(err);
-      });
+      `,
+        (err) => {
+          if (err) reject(err);
+        }
+      );
 
       // Time entries table
-      db.run(`
+      db.run(
+        `
         CREATE TABLE IF NOT EXISTS time_entries (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           task_id INTEGER NOT NULL,
@@ -96,10 +111,12 @@ export function initializeDatabase() {
           FOREIGN KEY (task_id) REFERENCES tasks(id),
           UNIQUE(task_id, date, start_time)
         )
-      `, (err) => {
-        if (err) reject(err);
-        else resolve();
-      });
+      `,
+        (err) => {
+          if (err) reject(err);
+          else resolve();
+        }
+      );
     });
   });
 }
@@ -107,7 +124,7 @@ export function initializeDatabase() {
 // Helper functions for database queries
 export function dbRun(sql, params = []) {
   return new Promise((resolve, reject) => {
-    db.run(sql, params, function(err) {
+    db.run(sql, params, function (err) {
       if (err) reject(err);
       else resolve(this);
     });
