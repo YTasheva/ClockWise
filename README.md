@@ -1,2 +1,134 @@
 # ClockWise
-Time Tracking App
+
+A web-based time tracking application that helps you keep track of how much time you spend on tasks during your working day.
+
+## Features
+
+- **Project Management** - Create and organize projects (includes a built-in "No Project" for unassigned tasks)
+- **Task Management** - Add tasks to projects with quick switching between tasks and projects
+- **Real-time Timer** - Track time with minute-level precision (HH:MM format)
+- **Daily Summary** - View total time spent on each task, project, and task-per-project
+- **Daily Isolation** - Data is organized by day with a 4 AM boundary (time before 4 AM belongs to the previous day)
+- **Persistent Storage** - All data is stored locally in SQLite
+
+## Quick Start
+
+### Prerequisites
+- Node.js (v16 or higher)
+- npm
+
+### Installation & Setup
+
+1. **Install backend dependencies:**
+   ```bash
+   cd backend
+   npm install
+   ```
+
+2. **Install frontend dependencies:**
+   ```bash
+   cd ../frontend
+   npm install
+   ```
+
+### Running the Application
+
+1. **Start the backend (Terminal 1):**
+   ```bash
+   cd backend
+   npm run dev
+   ```
+   The backend will run on `http://localhost:3001`
+
+2. **Start the frontend (Terminal 2):**
+   ```bash
+   cd frontend
+   npm run dev
+   ```
+   The frontend will run on `http://localhost:3000`
+
+3. **Open your browser** and navigate to `http://localhost:3000`
+
+## How to Use
+
+### Setup Your Projects and Tasks
+1. Use the **Projects** section to create projects (or use the default "No Project")
+2. Select a project and use the **Tasks** section to create tasks for that project
+
+### Track Time
+1. Click on a task in the **Tasks** section to select it
+2. In the **Timer** section, click the **Start** button to begin tracking
+3. The timer will show elapsed time in HH:MM format
+4. Click **End** to stop tracking and record the entry
+   - Entries shorter than 1 minute are automatically discarded
+
+### Quick Task Switching
+- **1 click to switch tasks in same project:** Click a different task in the current project
+- **1 click to switch projects for same task:** Select a different project, then click the active task again
+- **2 clicks for different task+project:** Select the new project, then click the desired task
+
+### View Daily Totals
+The **Daily Summary** section shows:
+- **Total Time by Task** - Time spent on each task
+- **Total Time by Project** - Time spent on each project
+- **Total Time by Task per Project** - Breakdown of each task within each project
+
+## Data Storage
+
+All data is stored locally in a SQLite database at:
+```
+~/Library/Application Support/ClockWise/clockwise.db
+```
+
+## Time Tracking Rules
+
+- **Time precision:** Recorded to the minute (start and stop times)
+- **Minimum duration:** Entries must be at least 1 minute to be recorded
+- **Non-overlapping tasks:** Starting a new task automatically ends the previous one
+- **Daily boundary:** New days start at 4 AM (time before 4 AM belongs to the previous day)
+
+## Architecture
+
+- **Backend:** Node.js + Express + SQLite3
+- **Frontend:** React + Vite
+- **Data:** Local SQLite database
+- **Communication:** REST API over HTTP
+
+## Project Structure
+
+```
+ClockWise/
+├── backend/
+│   ├── database.js       - Database initialization and helpers
+│   ├── utils.js          - Time calculation utilities
+│   ├── server.js         - Express server and API endpoints
+│   └── package.json
+├── frontend/
+│   ├── src/
+│   │   ├── App.jsx       - Main application component
+│   │   ├── main.jsx      - React entry point
+│   │   ├── index.css     - Global styles
+│   │   └── components/
+│   │       ├── ProjectManager.jsx  - Project CRUD
+│   │       ├── TaskManager.jsx     - Task CRUD
+│   │       ├── Timer.jsx           - Timer controls
+│   │       └── Totals.jsx          - Daily summary display
+│   ├── index.html
+│   ├── vite.config.js
+│   └── package.json
+├── README.md
+└── LICENSE
+```
+
+## Development
+
+To work on the application:
+
+1. Backend changes automatically reload with `npm run dev`
+2. Frontend changes automatically reload with Vite's hot module replacement
+3. Make API changes in `backend/server.js`
+4. Make UI changes in `frontend/src/`
+
+## License
+
+MIT License - See LICENSE file for details
