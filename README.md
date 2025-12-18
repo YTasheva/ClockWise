@@ -9,6 +9,29 @@
   <a href="https://github.com/ytasheva/ClockWise/network/members">
       <img src="https://img.shields.io/github/forks/ytasheva/ClockWise.svg?style=for-the-badge" alt=""></a>
 
+## Table of contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [Quick Start](#quick-start)
+  - [Prerequisites](#prerequisites)
+  - [Installation & Setup](#installation-&-setup)
+  - [Running the Application](#running-the-application)
+- [How to Use](#how-to-use)
+  - [Setup Your Projects and Tasks](#setup-your-projects-and-tasks)
+  - [Track Time](#track-time)
+  - [Quick Task Switching](#quick-task-switching)
+  - [View Daily Totals](#view-daily-totals)
+- [Data Storage](#data-storage)
+- [Time Tracking Rules](#time-tracking-rules)
+- [Architecture](#architecture)
+- [Project Structure](#project-structure)
+- [Development](#development)
+- [Licence](#licence)
+- [Authors](#authors)
+
+## Overview
+
 A web-based time tracking application that helps you keep track of how much time you spend on tasks during your working day.
 
 ## Features
