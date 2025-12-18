@@ -14,12 +14,14 @@ A web-based time tracking application that helps you keep track of how much time
 ## Quick Start
 
 ### Prerequisites
+
 - Node.js (v16 or higher)
 - npm
 
 ### Installation & Setup
 
 1. **Install backend dependencies:**
+
    ```bash
    cd backend
    npm install
@@ -34,17 +36,21 @@ A web-based time tracking application that helps you keep track of how much time
 ### Running the Application
 
 1. **Start the backend (Terminal 1):**
+
    ```bash
    cd backend
    npm run dev
    ```
+
    The backend will run on `http://localhost:3001`
 
 2. **Start the frontend (Terminal 2):**
+
    ```bash
    cd frontend
    npm run dev
    ```
+
    The frontend will run on `http://localhost:3000`
 
 3. **Open your browser** and navigate to `http://localhost:3000`
@@ -52,10 +58,12 @@ A web-based time tracking application that helps you keep track of how much time
 ## How to Use
 
 ### Setup Your Projects and Tasks
+
 1. Use the **Projects** section to create projects (or use the default "No Project")
 2. Select a project and use the **Tasks** section to create tasks for that project
 
 ### Track Time
+
 1. Click on a task in the **Tasks** section to select it
 2. In the **Timer** section, click the **Start** button to begin tracking
 3. The timer will show elapsed time in HH:MM format
@@ -63,12 +71,15 @@ A web-based time tracking application that helps you keep track of how much time
    - Entries shorter than 1 minute are automatically discarded
 
 ### Quick Task Switching
+
 - **1 click to switch tasks in same project:** Click a different task in the current project
 - **1 click to switch projects for same task:** Select a different project, then click the active task again
 - **2 clicks for different task+project:** Select the new project, then click the desired task
 
 ### View Daily Totals
+
 The **Daily Summary** section shows:
+
 - **Total Time by Task** - Time spent on each task
 - **Total Time by Project** - Time spent on each project
 - **Total Time by Task per Project** - Breakdown of each task within each project
@@ -76,6 +87,7 @@ The **Daily Summary** section shows:
 ## Data Storage
 
 All data is stored locally in a SQLite database at:
+
 ```
 ~/Library/Application Support/ClockWise/clockwise.db
 ```
