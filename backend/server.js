@@ -1,7 +1,12 @@
-import express from 'express';
-import cors from 'cors';
-import { initializeDatabase, dbRun, dbGet, dbAll } from './database.js';
-import { getTodayDate, calculateDurationMinutes, isValidDuration, formatDuration } from './utils.js';
+import express from "express";
+import cors from "cors";
+import { initializeDatabase, dbRun, dbGet, dbAll } from "./database.js";
+import {
+  getTodayDate,
+  calculateDurationMinutes,
+  isValidDuration,
+  formatDuration,
+} from "./utils.js";
 
 const app = express();
 const PORT = 3001;
@@ -14,82 +19,94 @@ await initializeDatabase();
 
 // ============= PROJECTS API =============
 
-app.get('/api/projects', async (req, res) => {
+app.get("/api/projects", async (req, res) => {
   try {
-    const projects = await dbAll('SELECT id, name, is_builtin FROM projects ORDER BY is_builtin DESC, name');
+    const projects = await dbAll(
+      "SELECT id, name, is_builtin FROM projects ORDER BY is_builtin DESC, name"
+    );
     res.json(projects);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-app.post('/api/projects', async (req, res) => {
+app.post("/api/projects", async (req, res) => {
   try {
     const { name } = req.body;
     if (!name || name.trim().length === 0 || name.length > 50) {
-      return res.status(400).json({ error: 'Project name must be 1-50 characters' });
+      return res
+        .status(400)
+        .json({ error: "Project name must be 1-50 characters" });
     }
-    
+
     const result = await dbRun(
-      'INSERT INTO projects (name, is_builtin) VALUES (?, 0)',
+      "INSERT INTO projects (name, is_builtin) VALUES (?, 0)",
       [name.trim()]
     );
-    
+
     res.json({ id: result.lastID, name: name.trim(), is_builtin: 0 });
   } catch (error) {
-    if (error.message.includes('UNIQUE')) {
-      res.status(400).json({ error: 'Project name already exists' });
+    if (error.message.includes("UNIQUE")) {
+      res.status(400).json({ error: "Project name already exists" });
     } else {
       res.status(500).json({ error: error.message });
     }
   }
 });
 
-app.put('/api/projects/:id', async (req, res) => {
+app.put("/api/projects/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const { name } = req.body;
-    
-    const project = await dbGet('SELECT is_builtin FROM projects WHERE id = ?', [id]);
+
+    const project = await dbGet(
+      "SELECT is_builtin FROM projects WHERE id = ?",
+      [id]
+    );
     if (!project) {
-      return res.status(404).json({ error: 'Project not found' });
+      return res.status(404).json({ error: "Project not found" });
     }
-    
+
     if (project.is_builtin) {
-      return res.status(400).json({ error: 'Cannot rename built-in project' });
+      return res.status(400).json({ error: "Cannot rename built-in project" });
     }
-    
+
     if (!name || name.trim().length === 0 || name.length > 50) {
-      return res.status(400).json({ error: 'Project name must be 1-50 characters' });
+      return res
+        .status(400)
+        .json({ error: "Project name must be 1-50 characters" });
     }
-    
-    await dbRun('UPDATE projects SET name = ? WHERE id = ?', [name.trim(), id]);
+
+    await dbRun("UPDATE projects SET name = ? WHERE id = ?", [name.trim(), id]);
     res.json({ id: parseInt(id), name: name.trim(), is_builtin: 0 });
   } catch (error) {
-    if (error.message.includes('UNIQUE')) {
-      res.status(400).json({ error: 'Project name already exists' });
+    if (error.message.includes("UNIQUE")) {
+      res.status(400).json({ error: "Project name already exists" });
     } else {
       res.status(500).json({ error: error.message });
     }
   }
 });
 
-app.delete('/api/projects/:id', async (req, res) => {
+app.delete("/api/projects/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    
-    const project = await dbGet('SELECT is_builtin FROM projects WHERE id = ?', [id]);
+
+    const project = await dbGet(
+      "SELECT is_builtin FROM projects WHERE id = ?",
+      [id]
+    );
     if (!project) {
-      return res.status(404).json({ error: 'Project not found' });
+      return res.status(404).json({ error: "Project not found" });
     }
-    
+
     if (project.is_builtin) {
-      return res.status(400).json({ error: 'Cannot delete built-in project' });
+      return res.status(400).json({ error: "Cannot delete built-in project" });
     }
-    
+
     // Delete project (cascade will handle task_projects and time_entries)
-    await dbRun('DELETE FROM projects WHERE id = ?', [id]);
-    
+    await dbRun("DELETE FROM projects WHERE id = ?", [id]);
+
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -98,7 +115,7 @@ app.delete('/api/projects/:id', async (req, res) => {
 
 // ============= TASKS API =============
 
-app.get('/api/tasks', async (req, res) => {
+app.get("/api/tasks", async (req, res) => {
   try {
     const tasks = await dbAll(
       `SELECT DISTINCT t.id, t.name
@@ -111,67 +128,70 @@ app.get('/api/tasks', async (req, res) => {
   }
 });
 
-app.post('/api/tasks', async (req, res) => {
+app.post("/api/tasks", async (req, res) => {
   try {
     const { name } = req.body;
-    
+
     if (!name || name.trim().length === 0 || name.length > 50) {
-      return res.status(400).json({ error: 'Task name must be 1-50 characters' });
+      return res
+        .status(400)
+        .json({ error: "Task name must be 1-50 characters" });
     }
-    
-    const result = await dbRun(
-      'INSERT INTO tasks (name) VALUES (?)',
-      [name.trim()]
-    );
-    
+
+    const result = await dbRun("INSERT INTO tasks (name) VALUES (?)", [
+      name.trim(),
+    ]);
+
     res.json({ id: result.lastID, name: name.trim() });
   } catch (error) {
-    if (error.message.includes('UNIQUE')) {
-      res.status(400).json({ error: 'Task already exists' });
+    if (error.message.includes("UNIQUE")) {
+      res.status(400).json({ error: "Task already exists" });
     } else {
       res.status(500).json({ error: error.message });
     }
   }
 });
 
-app.put('/api/tasks/:id', async (req, res) => {
+app.put("/api/tasks/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const { name } = req.body;
-    
-    const task = await dbGet('SELECT id FROM tasks WHERE id = ?', [id]);
+
+    const task = await dbGet("SELECT id FROM tasks WHERE id = ?", [id]);
     if (!task) {
-      return res.status(404).json({ error: 'Task not found' });
+      return res.status(404).json({ error: "Task not found" });
     }
-    
+
     if (!name || name.trim().length === 0 || name.length > 50) {
-      return res.status(400).json({ error: 'Task name must be 1-50 characters' });
+      return res
+        .status(400)
+        .json({ error: "Task name must be 1-50 characters" });
     }
-    
-    await dbRun('UPDATE tasks SET name = ? WHERE id = ?', [name.trim(), id]);
+
+    await dbRun("UPDATE tasks SET name = ? WHERE id = ?", [name.trim(), id]);
     res.json({ id: parseInt(id), name: name.trim() });
   } catch (error) {
-    if (error.message.includes('UNIQUE')) {
-      res.status(400).json({ error: 'Task already exists' });
+    if (error.message.includes("UNIQUE")) {
+      res.status(400).json({ error: "Task already exists" });
     } else {
       res.status(500).json({ error: error.message });
     }
   }
 });
 
-app.delete('/api/tasks/:id', async (req, res) => {
+app.delete("/api/tasks/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    
-    const task = await dbGet('SELECT id FROM tasks WHERE id = ?', [id]);
+
+    const task = await dbGet("SELECT id FROM tasks WHERE id = ?", [id]);
     if (!task) {
-      return res.status(404).json({ error: 'Task not found' });
+      return res.status(404).json({ error: "Task not found" });
     }
-    
-    await dbRun('DELETE FROM time_entries WHERE task_id = ?', [id]);
-    await dbRun('DELETE FROM task_projects WHERE task_id = ?', [id]);
-    await dbRun('DELETE FROM tasks WHERE id = ?', [id]);
-    
+
+    await dbRun("DELETE FROM time_entries WHERE task_id = ?", [id]);
+    await dbRun("DELETE FROM task_projects WHERE task_id = ?", [id]);
+    await dbRun("DELETE FROM tasks WHERE id = ?", [id]);
+
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -180,10 +200,10 @@ app.delete('/api/tasks/:id', async (req, res) => {
 
 // ============= TIMER API =============
 
-app.get('/api/timer/current', async (req, res) => {
+app.get("/api/timer/current", async (req, res) => {
   try {
     const today = getTodayDate();
-    
+
     // Get the most recent active time entry
     const entry = await dbGet(
       `SELECT te.id, te.task_id, te.start_time, te.end_time, t.name as task_name
@@ -194,7 +214,7 @@ app.get('/api/timer/current', async (req, res) => {
        LIMIT 1`,
       [today]
     );
-    
+
     if (entry) {
       res.json({
         active: true,
@@ -202,7 +222,7 @@ app.get('/api/timer/current', async (req, res) => {
         task_id: entry.task_id,
         task_name: entry.task_name,
         start_time: entry.start_time,
-        elapsed_minutes: calculateDurationMinutes(entry.start_time, new Date())
+        elapsed_minutes: calculateDurationMinutes(entry.start_time, new Date()),
       });
     } else {
       res.json({ active: false });
@@ -212,64 +232,78 @@ app.get('/api/timer/current', async (req, res) => {
   }
 });
 
-app.post('/api/timer/start', async (req, res) => {
+app.post("/api/timer/start", async (req, res) => {
   try {
     const { task_id } = req.body;
-    
+
     if (!task_id) {
-      return res.status(400).json({ error: 'Task ID required' });
+      return res.status(400).json({ error: "Task ID required" });
     }
-    
+
     const today = getTodayDate();
     const now = new Date().toISOString();
-    
-    const task = await dbGet('SELECT id, name FROM tasks WHERE id = ?', [task_id]);
+
+    const task = await dbGet("SELECT id, name FROM tasks WHERE id = ?", [
+      task_id,
+    ]);
     if (!task) {
-      return res.status(404).json({ error: 'Task not found' });
+      return res.status(404).json({ error: "Task not found" });
     }
-    
+
     // Stop any currently active timer
     const activeEntry = await dbGet(
       `SELECT id FROM time_entries WHERE date = ? AND end_time IS NULL`,
       [today]
     );
-    
+
     if (activeEntry) {
-      await dbRun('UPDATE time_entries SET end_time = ? WHERE id = ?', [now, activeEntry.id]);
-      
+      await dbRun("UPDATE time_entries SET end_time = ? WHERE id = ?", [
+        now,
+        activeEntry.id,
+      ]);
+
       // Check duration and delete if less than 1 minute
-      const entry = await dbGet('SELECT start_time, end_time FROM time_entries WHERE id = ?', [activeEntry.id]);
+      const entry = await dbGet(
+        "SELECT start_time, end_time FROM time_entries WHERE id = ?",
+        [activeEntry.id]
+      );
       if (!isValidDuration(entry.start_time, entry.end_time)) {
-        await dbRun('DELETE FROM time_entries WHERE id = ?', [activeEntry.id]);
+        await dbRun("DELETE FROM time_entries WHERE id = ?", [activeEntry.id]);
       } else {
-        const duration = calculateDurationMinutes(entry.start_time, entry.end_time);
-        await dbRun('UPDATE time_entries SET duration_minutes = ? WHERE id = ?', [duration, activeEntry.id]);
+        const duration = calculateDurationMinutes(
+          entry.start_time,
+          entry.end_time
+        );
+        await dbRun(
+          "UPDATE time_entries SET duration_minutes = ? WHERE id = ?",
+          [duration, activeEntry.id]
+        );
       }
     }
-    
+
     // Start new timer
     const result = await dbRun(
-      'INSERT INTO time_entries (task_id, date, start_time) VALUES (?, ?, ?)',
+      "INSERT INTO time_entries (task_id, date, start_time) VALUES (?, ?, ?)",
       [task_id, today, now]
     );
-    
+
     res.json({
       active: true,
       entry_id: result.lastID,
       task_id,
       task_name: task.name,
-      start_time: now
+      start_time: now,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-app.post('/api/timer/end', async (req, res) => {
+app.post("/api/timer/end", async (req, res) => {
   try {
     const today = getTodayDate();
     const now = new Date().toISOString();
-    
+
     const activeEntry = await dbGet(
       `SELECT te.id, te.task_id, te.start_time, t.name as task_name
        FROM time_entries te
@@ -277,29 +311,35 @@ app.post('/api/timer/end', async (req, res) => {
        WHERE te.date = ? AND te.end_time IS NULL`,
       [today]
     );
-    
+
     if (!activeEntry) {
-      return res.status(400).json({ error: 'No active timer' });
+      return res.status(400).json({ error: "No active timer" });
     }
-    
+
     // End the timer
-    await dbRun('UPDATE time_entries SET end_time = ? WHERE id = ?', [now, activeEntry.id]);
-    
+    await dbRun("UPDATE time_entries SET end_time = ? WHERE id = ?", [
+      now,
+      activeEntry.id,
+    ]);
+
     // Check duration and delete if less than 1 minute
     if (!isValidDuration(activeEntry.start_time, now)) {
-      await dbRun('DELETE FROM time_entries WHERE id = ?', [activeEntry.id]);
+      await dbRun("DELETE FROM time_entries WHERE id = ?", [activeEntry.id]);
       res.json({ success: true, discarded: true });
     } else {
       const duration = calculateDurationMinutes(activeEntry.start_time, now);
-      await dbRun('UPDATE time_entries SET duration_minutes = ? WHERE id = ?', [duration, activeEntry.id]);
+      await dbRun("UPDATE time_entries SET duration_minutes = ? WHERE id = ?", [
+        duration,
+        activeEntry.id,
+      ]);
       res.json({
         success: true,
         discarded: false,
         entry: {
           id: activeEntry.id,
           task_name: activeEntry.task_name,
-          duration_minutes: duration
-        }
+          duration_minutes: duration,
+        },
       });
     }
   } catch (error) {
@@ -309,10 +349,10 @@ app.post('/api/timer/end', async (req, res) => {
 
 // ============= TOTALS API =============
 
-app.get('/api/totals', async (req, res) => {
+app.get("/api/totals", async (req, res) => {
   try {
     const today = getTodayDate();
-    
+
     // Total by task
     const byTask = await dbAll(
       `SELECT t.id, t.name, 
@@ -326,7 +366,7 @@ app.get('/api/totals', async (req, res) => {
        ORDER BY total_minutes DESC`,
       [today, today]
     );
-    
+
     // Total by project
     const byProject = await dbAll(
       `SELECT p.id, p.name, SUM(te.duration_minutes) as total_minutes
@@ -345,7 +385,7 @@ app.get('/api/totals', async (req, res) => {
        ORDER BY p.is_builtin DESC, p.name`,
       [today, today]
     );
-    
+
     // Total by task per project
     const byTaskPerProject = await dbAll(
       `SELECT p.id as project_id, p.name as project_name, t.id as task_id, t.name as task_name,
@@ -361,11 +401,11 @@ app.get('/api/totals', async (req, res) => {
        ORDER BY p.is_builtin DESC, p.name, total_minutes DESC`,
       [today, today]
     );
-    
+
     res.json({
       byTask,
       byProject,
-      byTaskPerProject
+      byTaskPerProject,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -374,10 +414,10 @@ app.get('/api/totals', async (req, res) => {
 
 // ============= TIMESHEET EXPORT API =============
 
-app.get('/api/timesheet/entries', async (req, res) => {
+app.get("/api/timesheet/entries", async (req, res) => {
   try {
     const today = getTodayDate();
-    
+
     // Get all time entries for today in chronological order
     const entries = await dbAll(
       `SELECT te.id, te.task_id, te.start_time, te.end_time, te.duration_minutes, t.name as task_name
@@ -387,7 +427,7 @@ app.get('/api/timesheet/entries', async (req, res) => {
        ORDER BY te.start_time ASC`,
       [today]
     );
-    
+
     res.json(entries || []);
   } catch (error) {
     res.status(500).json({ error: error.message });
