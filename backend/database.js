@@ -3,18 +3,34 @@ import path from "path";
 import os from "os";
 import fs from "fs";
 
-const DB_DIR = path.join(
+const DEFAULT_DB_DIR = path.join(
   os.homedir(),
   "Library",
   "Application Support",
   "ClockWise"
 );
-const DB_PATH = path.join(DB_DIR, "clockwise.db");
+const FALLBACK_DB_DIR = path.join(process.cwd(), "data");
 
-// Ensure directory exists
-if (!fs.existsSync(DB_DIR)) {
-  fs.mkdirSync(DB_DIR, { recursive: true });
+function ensureDirectoryWritable(dir) {
+  try {
+    fs.mkdirSync(dir, { recursive: true });
+    fs.accessSync(dir, fs.constants.W_OK);
+    return dir;
+  } catch (error) {
+    console.warn(`Cannot use database directory "${dir}": ${error.message}`);
+    return null;
+  }
 }
+
+const resolvedDbDir =
+  ensureDirectoryWritable(process.env.CLOCKWISE_DB_DIR || DEFAULT_DB_DIR) ||
+  ensureDirectoryWritable(FALLBACK_DB_DIR);
+
+if (!resolvedDbDir) {
+  throw new Error("Unable to find a writable directory for the database");
+}
+
+const DB_PATH = path.join(resolvedDbDir, "clockwise.db");
 
 const db = new sqlite3.Database(DB_PATH, (err) => {
   if (err) {
