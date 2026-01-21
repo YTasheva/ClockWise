@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 
 function ProjectManager({
   projects,
@@ -105,7 +106,12 @@ function ProjectManager({
 
       <div className="project-list">
         {projects.map((project) => (
-          <div key={project.id}>
+          <motion.div
+            key={project.id}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+          >
             {editingId === project.id ? (
               <input
                 type="text"
@@ -154,7 +160,7 @@ function ProjectManager({
                 </button>
               </div>
             )}
-          </div>
+          </motion.div>
         ))}
       </div>
 
