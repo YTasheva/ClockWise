@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 
 function Totals({ refreshKey }) {
   const [totals, setTotals] = useState(null);
@@ -50,7 +51,12 @@ function Totals({ refreshKey }) {
       <div className="totals-container">
         {/* By Task */}
         {totals.byTask?.length > 0 && (
-          <div className="totals-table-wrapper">
+          <motion.div
+            className="totals-table-wrapper"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25 }}
+          >
             <h3>Total Time by Task</h3>
             <table className="totals-table">
               <thead>
@@ -73,12 +79,17 @@ function Totals({ refreshKey }) {
                 ))}
               </tbody>
             </table>
-          </div>
+          </motion.div>
         )}
 
         {/* By Project */}
         {totals.byProject?.length > 0 && (
-          <div className="totals-table-wrapper">
+          <motion.div
+            className="totals-table-wrapper"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, delay: 0.05 }}
+          >
             <h3>Total Time by Project</h3>
             <table className="totals-table">
               <thead>
@@ -101,12 +112,17 @@ function Totals({ refreshKey }) {
                 ))}
               </tbody>
             </table>
-          </div>
+          </motion.div>
         )}
 
         {/* By Task Per Project */}
         {totals.byTaskPerProject?.length > 0 && (
-          <div className="totals-table-wrapper">
+          <motion.div
+            className="totals-table-wrapper"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, delay: 0.1 }}
+          >
             <h3>Time by Task per Project</h3>
             <table className="totals-table">
               <thead>
@@ -131,7 +147,7 @@ function Totals({ refreshKey }) {
                 ))}
               </tbody>
             </table>
-          </div>
+          </motion.div>
         )}
       </div>
     </div>
