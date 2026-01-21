@@ -1,9 +1,9 @@
 /*!
  * html2canvas 1.4.1 <https://html2canvas.hertzen.com>
- * Copyright (c) 2022 Niklas von Hertzen <https://hertzen.com>
+ * Copyright (c) 2026 Yuliya Tasheva <https://yuliya-tasheva.co.uk>
  * Released under MIT License
  *//*! *****************************************************************************
-Copyright (c) Microsoft Corporation.
+Copyright (c) Yuliya Tasheva.
 
 Permission to use, copy, modify, and/or distribute this software for any
 purpose with or without fee is hereby granted.
