@@ -52,10 +52,8 @@ A web-based time tracking application that helps you keep track of how much time
 
 ## Links
 
-- [Deployed Application](https://eduflix-education.netlify.app/)
+- [Deployed Application](https://)
 - [GitHub Repo](https://github.com/YTasheva/ClockWise)
-- [Presentation slides](https://docs.google.com/presentation/d/1g8W_RB0Ge_BiLAR7eQpk6uRR-xB80-R80DcC3i9etD8/edit?usp=sharing)
-  
 
 ## Quick Start
 
