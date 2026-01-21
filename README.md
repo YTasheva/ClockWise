@@ -13,6 +13,7 @@
 
 - [Overview](#overview)
 - [Features](#features)
+- [Links](#links)
 - [Quick Start](#quick-start)
   - [Prerequisites](#prerequisites)
   - [Installation & Setup](#installation-&-setup)
@@ -44,6 +45,17 @@ A web-based time tracking application that helps you keep track of how much time
 - **Daily Summary** - View total time spent on each task, project, and task-per-project
 - **Daily Isolation** - Data is organized by day with a 4 AM boundary (time before 4 AM belongs to the previous day)
 - **Persistent Storage** - All data is stored locally in SQLite
+
+## Screenshot
+
+<img width="1497" alt="Screenshot" src="https://github.com/YTasheva/ClockWise/blob/main/frontend/src/screenshot2.jpg">
+
+## Links
+
+- [Deployed Application](https://eduflix-education.netlify.app/)
+- [GitHub Repo](https://github.com/YTasheva/ClockWise)
+- [Presentation slides](https://docs.google.com/presentation/d/1g8W_RB0Ge_BiLAR7eQpk6uRR-xB80-R80DcC3i9etD8/edit?usp=sharing)
+  
 
 ## Quick Start
 
@@ -212,7 +224,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 - GitHub - [YTasheva](https://github.com/YTasheva) | [Yuliya Tasheva](https://github.com/YTasheva)
 - For any questions, suggestions, or issues, please contact our team at
   
-> Email [ytashevagit@gmail.com](#) &nbsp;&middot;&nbsp;
-> Copyright &copy; 2025 All Rights Reserved. Site By Yuliya Tasheva&reg;
+> Email [info@yuliya-tasheva.co.uk](#) &nbsp;&middot;&nbsp;
+> Copyright &copy; 2026 All Rights Reserved. Site By Yuliya Tasheva&reg;
 
 **Thank you for using and contributing to the ClockWise app! Your support helps us continually improve and deliver the best shipping management experience.**
