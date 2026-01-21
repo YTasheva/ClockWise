@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { FolderKanban, Pencil, Plus, Trash2 } from "lucide-react";
 
 function ProjectManager({
   projects,
@@ -105,46 +105,47 @@ function ProjectManager({
     <div>
       {error && <div className="error-alert">{error}</div>}
 
-      <div className="project-list">
+      <ul className="task-list">
         {projects.map((project) => (
-          <motion.div
+          <motion.li
             key={project.id}
+            className={`task-item ${
+              activeProject?.id === project.id ? "active" : ""
+            }`}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2 }}
           >
-            {editingId === project.id ? (
-              <input
-                type="text"
-                value={editName}
-                onChange={(e) => setEditName(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter")
-                    handleEditProject(project.id, editName);
-                  if (e.key === "Escape") setEditingId(null);
-                }}
-                onBlur={() => handleEditProject(project.id, editName)}
-                autoFocus
-                className="form-control"
-                style={{ marginBottom: "0.5rem" }}
-              />
-            ) : (
-              <button
-                className={`project-btn ${
-                  activeProject?.id === project.id ? "active" : ""
-                }`}
-                onClick={() => onProjectSelect(project)}
-              >
-                {project.name}
-              </button>
-            )}
+            <div
+              style={{ flex: 1, cursor: "pointer" }}
+              onClick={() => onProjectSelect(project)}
+            >
+              {editingId === project.id ? (
+                <input
+                  type="text"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter")
+                      handleEditProject(project.id, editName);
+                    if (e.key === "Escape") setEditingId(null);
+                  }}
+                  onBlur={() => handleEditProject(project.id, editName)}
+                  autoFocus
+                  className="form-control"
+                  style={{ maxWidth: "300px" }}
+                  onClick={(e) => e.stopPropagation()}
+                />
+              ) : (
+                <strong>{project.name}</strong>
+              )}
+            </div>
             {!project.is_builtin && (
-              <div
-                className="project-actions"
-                style={{ display: "inline-block", marginLeft: "0.5rem" }}
-              >
+              <div className="task-actions">
                 <button
-                  className="btn btn-sm btn-info"
+                  className="task-edit-btn"
+                  aria-label="Edit project"
+                  title="Edit"
                   onClick={() => {
                     setEditingId(project.id);
                     setEditName(project.name);
@@ -153,39 +154,46 @@ function ProjectManager({
                   <span className="btn-icon" aria-hidden="true">
                     <Pencil size={14} />
                   </span>
-                  Edit
                 </button>
                 <button
-                  className="btn btn-sm btn-danger"
+                  className="task-delete-btn"
+                  aria-label="Delete project"
+                  title="Delete"
                   onClick={() => handleDeleteProject(project.id)}
-                  style={{ marginLeft: "0.25rem" }}
                 >
                   <span className="btn-icon" aria-hidden="true">
                     <Trash2 size={14} />
                   </span>
-                  Delete
                 </button>
               </div>
             )}
-          </motion.div>
+            {project.is_builtin === 1 ? (
+              <span className="default-pill">Default</span>
+            ) : null}
+          </motion.li>
         ))}
-      </div>
+      </ul>
 
       <form onSubmit={handleAddProject} className="project-form">
-        <input
-          type="text"
-          value={newProjectName}
-          onChange={(e) => setNewProjectName(e.target.value)}
-          placeholder="New project name (max 50 characters)"
-          maxLength="50"
-          className="form-control"
-        />
-        <button type="submit" className="btn btn-primary">
-          <span className="btn-icon" aria-hidden="true">
-            <Plus size={16} />
+        <div className="form-label">
+          <span className="section-icon" aria-hidden="true">
+            <FolderKanban size={16} />
           </span>
           Add Project
-        </button>
+        </div>
+        <div className="form-row">
+          <input
+            type="text"
+            value={newProjectName}
+            onChange={(e) => setNewProjectName(e.target.value)}
+            placeholder="New project name (max 50 characters)"
+            maxLength="50"
+            className="form-control"
+          />
+          <button type="submit" className="btn btn-primary add-btn-icon">
+            <Plus size={18} aria-hidden="true" />
+          </button>
+        </div>
       </form>
     </div>
   );
