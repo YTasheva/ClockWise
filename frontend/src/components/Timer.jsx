@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 
 function Timer({
   currentTimer,
@@ -95,7 +96,12 @@ function Timer({
 
   return (
     <div>
-      <div className="timer-display">
+      <motion.div
+        className="timer-display"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
         {currentTimer?.active && currentTimer?.task_name ? (
           <div className="timer-task-info">
             <p className="label">Currently tracking:</p>
@@ -129,10 +135,15 @@ function Timer({
             </>
           )}
         </div>
-      </div>
+      </motion.div>
 
       {!currentTimer?.active && (
-        <div className="task-selector">
+        <motion.div
+          className="task-selector"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+        >
           <h3>Quick Select All Tasks</h3>
           <div className="task-quick-select">
             {tasks.length === 0 ? (
@@ -154,7 +165,7 @@ function Timer({
               ))
             )}
           </div>
-        </div>
+        </motion.div>
       )}
     </div>
   );
