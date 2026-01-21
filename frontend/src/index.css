@@ -22,12 +22,12 @@
 }
 
 body[data-theme="dark"] {
-  --color-bg: #0c0a09;
-  --color-surface: #171110;
-  --color-surface-alt: #1f1816;
+  --color-bg: #000000;
+  --color-surface: #0b0b0b;
+  --color-surface-alt: #121212;
   --color-text: #f6eee6;
-  --color-muted: #bdaea4;
-  --color-border: #3a2b24;
+  --color-muted: #bdb6b0;
+  --color-border: #2b2b2b;
   --color-shadow: rgba(0, 0, 0, 0.35);
   --color-accent: #9b1414;
   --color-accent-strong: #6f0f0f;
@@ -56,13 +56,13 @@ body[data-theme="dark"] .task-edit-btn {
 }
 
 body[data-theme="dark"] .section {
-  background: linear-gradient(160deg, #1d1512, #140f0e);
+  background: linear-gradient(160deg, #101010, #060606);
   border-color: rgba(224, 178, 74, 0.25);
   box-shadow: 0 18px 36px rgba(0, 0, 0, 0.45);
 }
 
 body[data-theme="dark"] .timer-section {
-  background: linear-gradient(160deg, #1d1512, #140f0e);
+  background: linear-gradient(160deg, #101010, #060606);
   border-color: rgba(224, 178, 74, 0.25);
 }
 
@@ -70,7 +70,7 @@ body[data-theme="dark"] .manage-panel,
 body[data-theme="dark"] .totals-table-wrapper,
 body[data-theme="dark"] .timer-display,
 body[data-theme="dark"] .task-selector {
-  background: rgba(36, 28, 26, 0.92);
+  background: rgba(16, 16, 16, 0.92);
   border-color: rgba(224, 178, 74, 0.2);
 }
 
@@ -385,6 +385,10 @@ body::before {
   font-family: "Courier New", monospace;
   margin: 24px 0;
   letter-spacing: 3px;
+}
+
+body[data-theme="dark"] .timer-time {
+  color: rgba(122, 13, 13, 0.9);
 }
 
 .timer-controls {
@@ -789,6 +793,18 @@ body::before {
 }
 
 .btn.btn-primary:hover {
+  background: rgba(145, 20, 20, 0.95) !important;
+}
+
+body[data-theme="dark"] .btn.btn-primary,
+body[data-theme="dark"] .task-delete-btn,
+body[data-theme="dark"] .end-btn {
+  background: rgba(122, 13, 13, 0.9) !important;
+}
+
+body[data-theme="dark"] .btn.btn-primary:hover,
+body[data-theme="dark"] .task-delete-btn:hover,
+body[data-theme="dark"] .end-btn:hover {
   background: rgba(145, 20, 20, 0.95) !important;
 }
 
