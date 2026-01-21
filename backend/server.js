@@ -198,6 +198,53 @@ app.delete("/api/tasks/:id", async (req, res) => {
   }
 });
 
+// ============= PROJECT TASK LINKS API =============
+
+app.get("/api/projects/:id/tasks", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const tasks = await dbAll(
+      `SELECT t.id, t.name
+       FROM tasks t
+       JOIN task_projects tp ON t.id = tp.task_id
+       WHERE tp.project_id = ?
+       ORDER BY t.name`,
+      [id]
+    );
+    res.json(tasks);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post("/api/projects/:projectId/tasks/:taskId", async (req, res) => {
+  try {
+    const { projectId, taskId } = req.params;
+
+    const project = await dbGet(
+      "SELECT id FROM projects WHERE id = ?",
+      [projectId]
+    );
+    if (!project) {
+      return res.status(404).json({ error: "Project not found" });
+    }
+
+    const task = await dbGet("SELECT id FROM tasks WHERE id = ?", [taskId]);
+    if (!task) {
+      return res.status(404).json({ error: "Task not found" });
+    }
+
+    await dbRun(
+      "INSERT OR IGNORE INTO task_projects (task_id, project_id) VALUES (?, ?)",
+      [taskId, projectId]
+    );
+
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // ============= TIMER API =============
 
 app.get("/api/timer/current", async (req, res) => {
