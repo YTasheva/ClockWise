@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { Pencil, Plus, Trash2 } from "lucide-react";
 
 function TaskManager({
   tasks,
@@ -151,12 +152,18 @@ function TaskManager({
                     setEditName(task.name);
                   }}
                 >
+                  <span className="btn-icon" aria-hidden="true">
+                    <Pencil size={14} />
+                  </span>
                   Edit
                 </button>
                 <button
                   className="task-delete-btn"
                   onClick={() => handleDeleteTask(task.id)}
                 >
+                  <span className="btn-icon" aria-hidden="true">
+                    <Trash2 size={14} />
+                  </span>
                   Delete
                 </button>
               </div>
@@ -175,6 +182,9 @@ function TaskManager({
           className="form-control"
         />
         <button type="submit" className="btn btn-primary">
+          <span className="btn-icon" aria-hidden="true">
+            <Plus size={16} />
+          </span>
           Add Task
         </button>
       </form>

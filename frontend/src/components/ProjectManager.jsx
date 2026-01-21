@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { Pencil, Plus, Trash2 } from "lucide-react";
 
 function ProjectManager({
   projects,
@@ -149,6 +150,9 @@ function ProjectManager({
                     setEditName(project.name);
                   }}
                 >
+                  <span className="btn-icon" aria-hidden="true">
+                    <Pencil size={14} />
+                  </span>
                   Edit
                 </button>
                 <button
@@ -156,6 +160,9 @@ function ProjectManager({
                   onClick={() => handleDeleteProject(project.id)}
                   style={{ marginLeft: "0.25rem" }}
                 >
+                  <span className="btn-icon" aria-hidden="true">
+                    <Trash2 size={14} />
+                  </span>
                   Delete
                 </button>
               </div>
@@ -174,6 +181,9 @@ function ProjectManager({
           className="form-control"
         />
         <button type="submit" className="btn btn-primary">
+          <span className="btn-icon" aria-hidden="true">
+            <Plus size={16} />
+          </span>
           Add Project
         </button>
       </form>

@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import {
+  CalendarDays,
+  Clock3,
+  LayoutGrid,
+  ListChecks,
+  Moon,
+  Sun,
+} from "lucide-react";
 import ProjectManager from "./components/ProjectManager";
 import TaskManager from "./components/TaskManager";
 import Timer from "./components/Timer";
@@ -156,7 +164,7 @@ function App() {
         <div className="container-lg header-bar">
           <div className="brand">
             <div className="brand-icon" aria-hidden="true">
-              CW
+              <Clock3 size={20} />
             </div>
             <div>
               <h1>ClockWise</h1>
@@ -172,9 +180,15 @@ function App() {
                 setTheme((prev) => (prev === "dark" ? "light" : "dark"))
               }
             >
+              <span className="btn-icon" aria-hidden="true">
+                {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+              </span>
               {theme === "dark" ? "Light Scene" : "Dark Scene"}
             </button>
-            <div className="date-pill">{dateLabel}</div>
+            <div className="date-pill">
+              <CalendarDays size={16} />
+              <span>{dateLabel}</span>
+            </div>
           </div>
         </div>
       </motion.header>
@@ -206,7 +220,12 @@ function App() {
               variants={cardVariants}
             >
               <div className="section-header">
-                <h2>Today's Totals</h2>
+                <h2>
+                  <span className="section-icon" aria-hidden="true">
+                    <LayoutGrid size={18} />
+                  </span>
+                  Today's Totals
+                </h2>
               </div>
               <Totals refreshKey={refreshTotals} />
             </motion.section>
@@ -216,7 +235,12 @@ function App() {
               variants={cardVariants}
             >
               <div className="section-header">
-                <h2>Manage Projects & Tasks</h2>
+                <h2>
+                  <span className="section-icon" aria-hidden="true">
+                    <ListChecks size={18} />
+                  </span>
+                  Manage Projects & Tasks
+                </h2>
               </div>
               <div className="manage-grid">
                 <div className="manage-panel">
