@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { Play, Square } from "lucide-react";
 
 function Timer({
   currentTimer,
@@ -125,11 +126,17 @@ function Timer({
                 handleStartTimer(selectedTask?.id || activeTask?.id)
               }
             >
+              <span className="btn-icon" aria-hidden="true">
+                <Play size={16} />
+              </span>
               Start
             </button>
           ) : (
             <>
               <button className="end-btn" onClick={handleEndTimer}>
+                <span className="btn-icon" aria-hidden="true">
+                  <Square size={16} />
+                </span>
                 End
               </button>
             </>
