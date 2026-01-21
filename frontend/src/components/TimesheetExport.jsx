@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { FileDown } from "lucide-react";
 
 function TimesheetExport() {
   const [loading, setLoading] = useState(false);
@@ -236,7 +237,16 @@ function TimesheetExport() {
         onClick={generatePDF}
         disabled={loading}
       >
-        {loading ? "Generating PDF..." : "Export Daily Timesheet"}
+        {loading ? (
+          "Generating PDF..."
+        ) : (
+          <>
+            <span className="btn-icon" aria-hidden="true">
+              <FileDown size={16} />
+            </span>
+            Export Daily Timesheet
+          </>
+        )}
       </button>
     </div>
   );
