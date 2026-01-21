@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   CalendarDays,
-  Clock3,
+  FolderKanban,
   LayoutGrid,
   ListChecks,
   Moon,
   Sun,
 } from "lucide-react";
+import clockIcon from "./clockwise.logo.png";
 import ProjectManager from "./components/ProjectManager";
 import TaskManager from "./components/TaskManager";
 import Timer from "./components/Timer";
@@ -27,6 +28,7 @@ function App() {
   const [theme, setTheme] = useState(getInitialTheme);
   const [projects, setProjects] = useState([]);
   const [tasks, setTasks] = useState([]);
+  const [linkedTaskIds, setLinkedTaskIds] = useState([]);
   const [activeProject, setActiveProject] = useState(null);
   const [activeTask, setActiveTask] = useState(null);
   const [currentTimer, setCurrentTimer] = useState(null);
@@ -73,6 +75,16 @@ function App() {
     fetchTasks();
   }, []);
 
+  useEffect(() => {
+    if (activeProject?.id) {
+      fetchProjectTasks(activeProject.id);
+      setActiveTask(null);
+    } else {
+      setLinkedTaskIds([]);
+      setActiveTask(null);
+    }
+  }, [activeProject]);
+
   // Fetch current timer
   useEffect(() => {
     fetchCurrentTimer();
@@ -108,6 +120,16 @@ function App() {
     }
   };
 
+  const fetchProjectTasks = async (projectId) => {
+    try {
+      const response = await fetch(`/api/projects/${projectId}/tasks`);
+      const data = await response.json();
+      setLinkedTaskIds(data.map((task) => task.id));
+    } catch (error) {
+      console.error("Error fetching project tasks:", error);
+    }
+  };
+
   const fetchCurrentTimer = async () => {
     try {
       const response = await fetch("/api/timer/current");
@@ -134,6 +156,27 @@ function App() {
   const handleTaskDeleted = () => {
     fetchTasks();
     setRefreshTotals((prev) => prev + 1);
+  };
+
+  const handleTaskSelect = async (task) => {
+    if (!task) return;
+    if (activeProject?.id && !linkedTaskIds.includes(task.id)) {
+      try {
+        const response = await fetch(
+          `/api/projects/${activeProject.id}/tasks/${task.id}`,
+          { method: "POST" }
+        );
+        if (!response.ok) {
+          const data = await response.json();
+          console.error("Link task error:", data.error);
+        } else {
+          fetchProjectTasks(activeProject.id);
+        }
+      } catch (error) {
+        console.error("Error linking task:", error);
+      }
+    }
+    setActiveTask(task);
   };
 
   const handleTimerStarted = () => {
@@ -163,11 +206,16 @@ function App() {
       >
         <div className="container-lg header-bar">
           <div className="brand">
-            <div className="brand-icon" aria-hidden="true">
-              <Clock3 size={20} />
-            </div>
             <div>
-              <h1>ClockWise</h1>
+              <h1>
+                <img
+                  src={clockIcon}
+                  alt=""
+                  className="title-icon-image"
+                  aria-hidden="true"
+                />
+                ClockWise
+              </h1>
               <p>Time Tracking Application</p>
             </div>
           </div>
@@ -244,7 +292,12 @@ function App() {
               </div>
               <div className="manage-grid">
                 <div className="manage-panel">
-                  <h3>Projects</h3>
+                  <h3>
+                    <span className="section-icon" aria-hidden="true">
+                      <FolderKanban size={16} />
+                    </span>
+                    Projects
+                  </h3>
                   <ProjectManager
                     projects={projects}
                     activeProject={activeProject}
@@ -253,16 +306,25 @@ function App() {
                     onProjectDeleted={handleProjectDeleted}
                   />
                 </div>
-                <div className="manage-panel">
-                  <h3>Tasks</h3>
+                <div className="manage-panel manage-panel-tasks">
+                  <h3>
+                    <span className="section-icon" aria-hidden="true">
+                      <ListChecks size={16} />
+                    </span>
+                    Tasks
+                  </h3>
                   <TaskManager
                     tasks={tasks}
                     projects={projects}
                     activeProject={activeProject}
                     activeTask={activeTask}
-                    onTaskSelect={setActiveTask}
+                    linkedTaskIds={linkedTaskIds}
+                    onTaskSelect={handleTaskSelect}
                     onTaskAdded={handleTaskAdded}
                     onTaskDeleted={handleTaskDeleted}
+                    onTaskLinked={() =>
+                      activeProject?.id && fetchProjectTasks(activeProject.id)
+                    }
                   />
                 </div>
               </div>
