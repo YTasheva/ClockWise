@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { BarChart3, Layers, ListChecks } from "lucide-react";
 
 function Totals({ refreshKey }) {
   const [totals, setTotals] = useState(null);
@@ -57,7 +58,12 @@ function Totals({ refreshKey }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25 }}
           >
-            <h3>Total Time by Task</h3>
+            <h3>
+              <span className="section-icon" aria-hidden="true">
+                <ListChecks size={16} />
+              </span>
+              Total Time by Task
+            </h3>
             <table className="totals-table">
               <thead>
                 <tr>
@@ -90,7 +96,12 @@ function Totals({ refreshKey }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25, delay: 0.05 }}
           >
-            <h3>Total Time by Project</h3>
+            <h3>
+              <span className="section-icon" aria-hidden="true">
+                <Layers size={16} />
+              </span>
+              Total Time by Project
+            </h3>
             <table className="totals-table">
               <thead>
                 <tr>
@@ -123,7 +134,12 @@ function Totals({ refreshKey }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25, delay: 0.1 }}
           >
-            <h3>Time by Task per Project</h3>
+            <h3>
+              <span className="section-icon" aria-hidden="true">
+                <BarChart3 size={16} />
+              </span>
+              Time by Task per Project
+            </h3>
             <table className="totals-table">
               <thead>
                 <tr>
