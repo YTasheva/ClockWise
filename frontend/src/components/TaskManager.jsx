@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 
 function TaskManager({
   tasks,
@@ -110,11 +111,14 @@ function TaskManager({
           <li className="no-data">No tasks yet. Add one below.</li>
         ) : (
           tasks.map((task) => (
-            <li
+            <motion.li
               key={task.id}
               className={`task-item ${
                 activeTask?.id === task.id ? "active" : ""
               }`}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2 }}
             >
               <div
                 style={{ flex: 1, cursor: "pointer" }}
@@ -156,7 +160,7 @@ function TaskManager({
                   Delete
                 </button>
               </div>
-            </li>
+            </motion.li>
           ))
         )}
       </ul>
