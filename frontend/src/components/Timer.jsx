@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Play, Square } from "lucide-react";
+import { Activity, FolderKanban, ListChecks, Play, Square } from "lucide-react";
 
 function Timer({
   currentTimer,
@@ -10,8 +10,18 @@ function Timer({
   onTimerStarted,
   onTimerEnded,
 }) {
-  const [elapsedTime, setElapsedTime] = useState("00:00");
+  const [elapsedTime, setElapsedTime] = useState("00:00:00");
   const [selectedTask, setSelectedTask] = useState(null);
+
+  const formatElapsed = (totalSeconds) => {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = Math.floor(totalSeconds % 60);
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+      2,
+      "0"
+    )}:${String(seconds).padStart(2, "0")}`;
+  };
 
   // Update selected task when active task changes
   useEffect(() => {
@@ -22,32 +32,29 @@ function Timer({
 
   // Update elapsed time display
   useEffect(() => {
-    if (currentTimer?.active && currentTimer?.start_time) {
-      const interval = setInterval(() => {
-        const start = new Date(currentTimer.start_time);
-        const now = new Date();
-        const diffMs = now - start;
-        const totalMinutes = Math.floor(diffMs / (1000 * 60));
-        const hours = Math.floor(totalMinutes / 60);
-        const minutes = totalMinutes % 60;
-        setElapsedTime(
-          `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
-            2,
-            "0"
-          )}`
-        );
-      }, 1000);
-      return () => clearInterval(interval);
-    } else if (currentTimer?.elapsed_minutes !== undefined) {
-      const hours = Math.floor(currentTimer.elapsed_minutes / 60);
-      const minutes = currentTimer.elapsed_minutes % 60;
-      setElapsedTime(
-        `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`
-      );
+    if (!currentTimer?.active || !currentTimer?.start_time) return;
+
+    const start = new Date(currentTimer.start_time);
+    const tick = () => {
+      const now = new Date();
+      const diffMs = now - start;
+      const totalSeconds = Math.floor(diffMs / 1000);
+      setElapsedTime(formatElapsed(totalSeconds));
+    };
+
+    tick();
+    const interval = setInterval(tick, 1000);
+    return () => clearInterval(interval);
+  }, [currentTimer?.active, currentTimer?.start_time]);
+
+  useEffect(() => {
+    if (currentTimer?.active) return;
+    if (currentTimer?.elapsed_minutes !== undefined) {
+      setElapsedTime(formatElapsed(currentTimer.elapsed_minutes * 60));
     } else {
-      setElapsedTime("00:00");
+      setElapsedTime("00:00:00");
     }
-  }, [currentTimer]);
+  }, [currentTimer?.active, currentTimer?.elapsed_minutes]);
 
   const handleStartTimer = async (taskId) => {
     if (!taskId) {
@@ -103,18 +110,39 @@ function Timer({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        {currentTimer?.active && currentTimer?.task_name ? (
-          <div className="timer-task-info">
-            <p className="label">Currently tracking:</p>
-            <p>
-              <strong>{currentTimer.task_name}</strong>
-            </p>
-          </div>
-        ) : (
-          <div className="timer-task-info">
-            <p className="label">No active timer</p>
-          </div>
-        )}
+        <div className="timer-task-info">
+          <p className="label">
+            <span className="btn-icon" aria-hidden="true">
+              <Activity size={14} />
+            </span>
+            CURRENT ACTIVITY
+          </p>
+          {activeProject?.name && (currentTimer?.task_name || activeTask?.name) ? (
+            <div className="current-activity">
+              <span className="current-project">
+                <span className="current-icon" aria-hidden="true">
+                  <FolderKanban size={16} />
+                </span>
+                {activeProject.name}
+              </span>
+              <span className="current-separator">›</span>
+              <span className="current-task">
+                <span className="current-icon" aria-hidden="true">
+                  <ListChecks size={16} />
+                </span>
+                {currentTimer?.task_name || activeTask?.name}
+              </span>
+            </div>
+          ) : (currentTimer?.task_name || activeTask?.name) ? (
+            <div className="current-activity">
+              <span className="current-task">
+                {currentTimer?.task_name || activeTask?.name}
+              </span>
+            </div>
+          ) : (
+            <p className="current-empty">Select a project and task</p>
+          )}
+        </div>
 
         <div className="timer-time">{elapsedTime}</div>
 
