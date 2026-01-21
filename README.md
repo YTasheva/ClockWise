@@ -25,8 +25,10 @@
 - [Data Storage](#data-storage)
 - [Time Tracking Rules](#time-tracking-rules)
 - [Architecture](#architecture)
+- [API Endpoints](#api-endpoints)
 - [Project Structure](#project-structure)
 - [Development](#development)
+  - [Testing](#testing)
 - [Licence](#licence)
 - [Authors](#authors)
 
@@ -138,6 +140,24 @@ All data is stored locally in a SQLite database at:
 - **Data:** Local SQLite database
 - **Communication:** REST API over HTTP
 
+## API Endpoints
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| GET | `/api/projects` | List projects |
+| POST | `/api/projects` | Create project |
+| PUT | `/api/projects/:id` | Rename project |
+| DELETE | `/api/projects/:id` | Delete project |
+| GET | `/api/tasks` | List tasks |
+| POST | `/api/tasks` | Create task |
+| PUT | `/api/tasks/:id` | Rename task |
+| DELETE | `/api/tasks/:id` | Delete task |
+| GET | `/api/timer/current` | Fetch active timer |
+| POST | `/api/timer/start` | Start timer for task |
+| POST | `/api/timer/end` | End active timer |
+| GET | `/api/totals` | Daily totals summary |
+| GET | `/api/timesheet/entries` | Daily time entries |
+
 ## Project Structure
 
 ```
@@ -168,10 +188,19 @@ ClockWise/
 
 To work on the application:
 
-1. Backend changes automatically reload with `npm run dev`
-2. Frontend changes automatically reload with Vite's hot module replacement
-3. Make API changes in `backend/server.js`
-4. Make UI changes in `frontend/src/`
+1. Run both servers together from repo root with `npm run dev`
+2. Backend changes automatically reload with `npm run dev`
+3. Frontend changes automatically reload with Vite's hot module replacement
+4. Make API changes in `backend/server.js`
+5. Make UI changes in `frontend/src/`
+
+### Testing
+
+Run the full test suite from the repo root:
+
+```bash
+npx vitest run --no-cache
+```
 
 ## License
 

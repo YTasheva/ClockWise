@@ -46,7 +46,8 @@ export function isValidDuration(startTime, endTime) {
 
 // Format minutes as HH:MM
 export function formatDuration(minutes) {
-  const hours = Math.floor(minutes / 60);
-  const mins = minutes % 60;
+  const safeMinutes = Number.isFinite(minutes) ? minutes : 0;
+  const hours = Math.floor(safeMinutes / 60);
+  const mins = safeMinutes % 60;
   return `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}`;
 }

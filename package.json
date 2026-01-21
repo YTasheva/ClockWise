@@ -1,0 +1,9 @@
+{
+  "name": "clockwise-root",
+  "private": true,
+  "scripts": {
+    "test": "npx vitest run --no-cache",
+    "test:watch": "npx vitest",
+    "dev": "node scripts/dev.js"
+  }
+}
