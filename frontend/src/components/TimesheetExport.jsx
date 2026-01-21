@@ -92,11 +92,19 @@ function TimesheetExport() {
             fillColor: [240, 242, 245],
           },
           didDrawPage: (data) => {
-            yPosition = data.lastAutoTable.finalY + 5;
+            if (data.lastAutoTable?.finalY) {
+              yPosition = data.lastAutoTable.finalY + 5;
+            } else {
+              yPosition += 5;
+            }
           },
         });
 
-        yPosition = doc.lastAutoTable.finalY + 10;
+        if (doc.lastAutoTable?.finalY) {
+          yPosition = doc.lastAutoTable.finalY + 10;
+        } else {
+          yPosition += 10;
+        }
       }
 
       // 2. Total Time by Project
@@ -126,11 +134,19 @@ function TimesheetExport() {
             fillColor: [240, 245, 242],
           },
           didDrawPage: (data) => {
-            yPosition = data.lastAutoTable.finalY + 5;
+            if (data.lastAutoTable?.finalY) {
+              yPosition = data.lastAutoTable.finalY + 5;
+            } else {
+              yPosition += 5;
+            }
           },
         });
 
-        yPosition = doc.lastAutoTable.finalY + 10;
+        if (doc.lastAutoTable?.finalY) {
+          yPosition = doc.lastAutoTable.finalY + 10;
+        } else {
+          yPosition += 10;
+        }
       }
 
       // 3. Total Time by Task (irrespective of projects)
@@ -160,11 +176,19 @@ function TimesheetExport() {
             fillColor: [240, 248, 255],
           },
           didDrawPage: (data) => {
-            yPosition = data.lastAutoTable.finalY + 5;
+            if (data.lastAutoTable?.finalY) {
+              yPosition = data.lastAutoTable.finalY + 5;
+            } else {
+              yPosition += 5;
+            }
           },
         });
 
-        yPosition = doc.lastAutoTable.finalY + 10;
+        if (doc.lastAutoTable?.finalY) {
+          yPosition = doc.lastAutoTable.finalY + 10;
+        } else {
+          yPosition += 10;
+        }
       }
 
       // 4. Chronological list of entries
@@ -244,7 +268,7 @@ function TimesheetExport() {
             <span className="btn-icon" aria-hidden="true">
               <FileDown size={16} />
             </span>
-            Export Daily Timesheet
+            Generate PDF
           </>
         )}
       </button>
