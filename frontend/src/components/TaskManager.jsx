@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { ListChecks, Pencil, Plus, Trash2 } from "lucide-react";
 
 function TaskManager({
   tasks,
   projects,
   activeProject,
   activeTask,
+  linkedTaskIds = [],
   onTaskSelect,
   onTaskAdded,
   onTaskDeleted,
+  onTaskLinked,
 }) {
   const [newTaskName, setNewTaskName] = useState("");
   const [error, setError] = useState("");
@@ -43,10 +45,31 @@ function TaskManager({
         return;
       }
 
+      const data = await response.json();
       setNewTaskName("");
       onTaskAdded();
+
+      if (activeProject?.id) {
+        await linkTaskToProject(data.id, activeProject.id);
+        onTaskLinked?.();
+      }
     } catch (err) {
       setError("Error adding task: " + err.message);
+    }
+  };
+
+  const linkTaskToProject = async (taskId, projectId) => {
+    try {
+      const response = await fetch(
+        `/api/projects/${projectId}/tasks/${taskId}`,
+        { method: "POST" }
+      );
+      if (!response.ok) {
+        const data = await response.json();
+        setError(data.error || "Failed to link task to project");
+      }
+    } catch (err) {
+      setError("Error linking task: " + err.message);
     }
   };
 
@@ -98,6 +121,7 @@ function TaskManager({
       }
 
       onTaskDeleted();
+      onTaskLinked?.();
     } catch (err) {
       setError("Error deleting task: " + err.message);
     }
@@ -141,12 +165,19 @@ function TaskManager({
                     style={{ maxWidth: "300px" }}
                   />
                 ) : (
-                  <strong>{task.name}</strong>
+                  <strong>
+                    {task.name}
+                    {linkedTaskIds.includes(task.id) && (
+                      <span className="linked-dot" aria-hidden="true" />
+                    )}
+                  </strong>
                 )}
               </div>
               <div className="task-actions">
                 <button
                   className="task-edit-btn"
+                  aria-label="Edit task"
+                  title="Edit"
                   onClick={() => {
                     setEditingId(task.id);
                     setEditName(task.name);
@@ -155,16 +186,16 @@ function TaskManager({
                   <span className="btn-icon" aria-hidden="true">
                     <Pencil size={14} />
                   </span>
-                  Edit
                 </button>
                 <button
                   className="task-delete-btn"
+                  aria-label="Delete task"
+                  title="Delete"
                   onClick={() => handleDeleteTask(task.id)}
                 >
                   <span className="btn-icon" aria-hidden="true">
                     <Trash2 size={14} />
                   </span>
-                  Delete
                 </button>
               </div>
             </motion.li>
@@ -173,20 +204,25 @@ function TaskManager({
       </ul>
 
       <form onSubmit={handleAddTask} className="task-form">
-        <input
-          type="text"
-          value={newTaskName}
-          onChange={(e) => setNewTaskName(e.target.value)}
-          placeholder="New task name (max 50 characters)"
-          maxLength="50"
-          className="form-control"
-        />
-        <button type="submit" className="btn btn-primary">
-          <span className="btn-icon" aria-hidden="true">
-            <Plus size={16} />
+        <div className="form-label">
+          <span className="section-icon" aria-hidden="true">
+            <ListChecks size={16} />
           </span>
           Add Task
-        </button>
+        </div>
+        <div className="form-row">
+          <input
+            type="text"
+            value={newTaskName}
+            onChange={(e) => setNewTaskName(e.target.value)}
+            placeholder="New task name (max 50 characters)"
+            maxLength="50"
+            className="form-control"
+          />
+          <button type="submit" className="btn btn-primary add-btn-icon">
+            <Plus size={18} aria-hidden="true" />
+          </button>
+        </div>
       </form>
     </div>
   );
