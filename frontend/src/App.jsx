@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import ProjectManager from "./components/ProjectManager";
 import TaskManager from "./components/TaskManager";
 import Timer from "./components/Timer";
@@ -6,6 +7,16 @@ import Totals from "./components/Totals";
 import TimesheetExport from "./components/TimesheetExport";
 
 function App() {
+  const getInitialTheme = () => {
+    if (typeof window === "undefined") return "light";
+    const saved = window.localStorage.getItem("clockwise-theme");
+    if (saved) return saved;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+  };
+
+  const [theme, setTheme] = useState(getInitialTheme);
   const [projects, setProjects] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [activeProject, setActiveProject] = useState(null);
@@ -13,6 +24,27 @@ function App() {
   const [currentTimer, setCurrentTimer] = useState(null);
   const [refreshTotals, setRefreshTotals] = useState(0);
   const [error, setError] = useState(null);
+
+  const pageVariants = {
+    hidden: { opacity: 0, y: 16 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" },
+    },
+  };
+
+  const gridVariants = {
+    hidden: {},
+    show: {
+      transition: { staggerChildren: 0.12, delayChildren: 0.1 },
+    },
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 18 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+  };
 
   // Fetch projects
   useEffect(() => {
@@ -39,6 +71,11 @@ function App() {
     const interval = setInterval(fetchCurrentTimer, 1000); // Update every second for elapsed time
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    document.body.dataset.theme = theme;
+    window.localStorage.setItem("clockwise-theme", theme);
+  }, [theme]);
 
   const fetchProjects = async () => {
     try {
@@ -100,69 +137,122 @@ function App() {
     setRefreshTotals((prev) => prev + 1);
   };
 
+  const dateLabel = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+
   return (
     <div className="app">
       {error && <div className="error-alert">{error}</div>}
-      <header className="app-header">
-        <div className="container-lg">
-          <h1>ClockWise</h1>
-          <p>Time Tracking Application</p>
+      <motion.header
+        className="app-header"
+        variants={pageVariants}
+        initial="hidden"
+        animate="show"
+      >
+        <div className="container-lg header-bar">
+          <div className="brand">
+            <div className="brand-icon" aria-hidden="true">
+              CW
+            </div>
+            <div>
+              <h1>ClockWise</h1>
+              <p>Time Tracking Application</p>
+            </div>
+          </div>
+          <div className="header-actions">
+            <TimesheetExport />
+            <button
+              type="button"
+              className="theme-toggle"
+              onClick={() =>
+                setTheme((prev) => (prev === "dark" ? "light" : "dark"))
+              }
+            >
+              {theme === "dark" ? "Light Scene" : "Dark Scene"}
+            </button>
+            <div className="date-pill">{dateLabel}</div>
+          </div>
         </div>
-      </header>
+      </motion.header>
 
       <main className="app-main">
         <div className="container-lg">
-          <section className="section projects-section">
-            <h2>Projects</h2>
-            <ProjectManager
-              projects={projects}
-              activeProject={activeProject}
-              onProjectSelect={setActiveProject}
-              onProjectAdded={handleProjectAdded}
-              onProjectDeleted={handleProjectDeleted}
-            />
-          </section>
-
-          <section className="section tasks-section">
-            <h2>Tasks</h2>
-            <TaskManager
-              tasks={tasks}
-              projects={projects}
-              activeProject={activeProject}
-              activeTask={activeTask}
-              onTaskSelect={setActiveTask}
-              onTaskAdded={handleTaskAdded}
-              onTaskDeleted={handleTaskDeleted}
-            />
-          </section>
-
-          <section className="section timer-section">
-            <Timer
-              currentTimer={currentTimer}
-              activeTask={activeTask}
-              activeProject={activeProject}
-              tasks={tasks}
-              onTimerStarted={handleTimerStarted}
-              onTimerEnded={handleTimerEnded}
-            />
-          </section>
-
-          <section className="section totals-section">
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "1rem",
-              }}
+          <motion.div
+            className="dashboard-grid"
+            variants={gridVariants}
+            initial="hidden"
+            animate="show"
+          >
+            <motion.section
+              className="section timer-section"
+              variants={cardVariants}
             >
-              <h2 style={{ margin: 0 }}>Daily Totals</h2>
-              <TimesheetExport />
-            </div>
-            <Totals refreshKey={refreshTotals} />
-          </section>
+              <Timer
+                currentTimer={currentTimer}
+                activeTask={activeTask}
+                activeProject={activeProject}
+                tasks={tasks}
+                onTimerStarted={handleTimerStarted}
+                onTimerEnded={handleTimerEnded}
+              />
+            </motion.section>
+
+            <motion.section
+              className="section totals-section"
+              variants={cardVariants}
+            >
+              <div className="section-header">
+                <h2>Today's Totals</h2>
+              </div>
+              <Totals refreshKey={refreshTotals} />
+            </motion.section>
+
+            <motion.section
+              className="section manage-section"
+              variants={cardVariants}
+            >
+              <div className="section-header">
+                <h2>Manage Projects & Tasks</h2>
+              </div>
+              <div className="manage-grid">
+                <div className="manage-panel">
+                  <h3>Projects</h3>
+                  <ProjectManager
+                    projects={projects}
+                    activeProject={activeProject}
+                    onProjectSelect={setActiveProject}
+                    onProjectAdded={handleProjectAdded}
+                    onProjectDeleted={handleProjectDeleted}
+                  />
+                </div>
+                <div className="manage-panel">
+                  <h3>Tasks</h3>
+                  <TaskManager
+                    tasks={tasks}
+                    projects={projects}
+                    activeProject={activeProject}
+                    activeTask={activeTask}
+                    onTaskSelect={setActiveTask}
+                    onTaskAdded={handleTaskAdded}
+                    onTaskDeleted={handleTaskDeleted}
+                  />
+                </div>
+              </div>
+            </motion.section>
+          </motion.div>
         </div>
       </main>
+      <footer className="app-footer">
+        <div className="container-lg">
+          <span>
+            © {new Date().getFullYear()} Yuliya Tasheva
+          </span>
+        </div>
+      </footer>
     </div>
   );
 }
