@@ -62,7 +62,7 @@ function Totals({ refreshKey }) {
               <span className="section-icon" aria-hidden="true">
                 <ListChecks size={16} />
               </span>
-              Total Time by Task
+              By Task
             </h3>
             <table className="totals-table">
               <thead>
@@ -100,7 +100,7 @@ function Totals({ refreshKey }) {
               <span className="section-icon" aria-hidden="true">
                 <Layers size={16} />
               </span>
-              Total Time by Project
+              By Project
             </h3>
             <table className="totals-table">
               <thead>
@@ -138,7 +138,7 @@ function Totals({ refreshKey }) {
               <span className="section-icon" aria-hidden="true">
                 <BarChart3 size={16} />
               </span>
-              Time by Task per Project
+              By Task per Project
             </h3>
             <table className="totals-table">
               <thead>
