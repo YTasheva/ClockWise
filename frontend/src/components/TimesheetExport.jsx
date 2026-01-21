@@ -236,7 +236,7 @@ function TimesheetExport() {
         onClick={generatePDF}
         disabled={loading}
       >
-        {loading ? "Generating PDF..." : "📄 Export Daily Timesheet"}
+        {loading ? "Generating PDF..." : "Export Daily Timesheet"}
       </button>
     </div>
   );
