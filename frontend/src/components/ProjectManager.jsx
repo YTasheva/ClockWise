@@ -5,9 +5,13 @@ import { FolderKanban, Pencil, Plus, Trash2 } from "lucide-react";
 function ProjectManager({
   projects,
   activeProject,
+  activeTask,
+  linkedTaskIds = [],
   onProjectSelect,
   onProjectAdded,
   onProjectDeleted,
+  onLinkActiveTask,
+  onUnlinkActiveTask,
 }) {
   const [newProjectName, setNewProjectName] = useState("");
   const [error, setError] = useState("");
@@ -173,6 +177,29 @@ function ProjectManager({
           </motion.li>
         ))}
       </ul>
+
+      {activeProject?.is_builtin === 1 && (
+        <div className="project-link-panel">
+          <div className="form-label">No Project Links</div>
+          <p className="project-link-help">
+            Link tasks explicitly to include them under No Project.
+          </p>
+          <button
+            type="button"
+            className="btn btn-info"
+            onClick={() =>
+              linkedTaskIds.includes(activeTask?.id)
+                ? onUnlinkActiveTask?.()
+                : onLinkActiveTask?.()
+            }
+            disabled={!activeTask}
+          >
+            {linkedTaskIds.includes(activeTask?.id)
+              ? "Unlink Selected Task"
+              : "Link Selected Task"}
+          </button>
+        </div>
+      )}
 
       <form onSubmit={handleAddProject} className="project-form">
         <div className="form-label">
