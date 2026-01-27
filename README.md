@@ -19,6 +19,8 @@
       <img src="https://img.shields.io/github/forks/ytasheva/ClockWise.svg?style=for-the-badge" alt=""></a>
   <a href="https://github.com/ytasheva/ClockWise/blob/main/LICENSE">
     <img src="https://img.shields.io/github/license/ytasheva/clockwise?style=for-the-badge" alt="License"></a> 
+  <a href="https://yuliya-tasheva.co.uk/">
+    <img src="https://img.shields.io/badge/Website-yuliya--tasheva.co.uk-0066CC?style=for-the-badge" alt="Website"></a>
 </p>
 
 <p align="center">
