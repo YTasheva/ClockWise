@@ -5,14 +5,9 @@ import { FolderKanban, Pencil, Plus, Trash2 } from "lucide-react";
 function ProjectManager({
   projects,
   activeProject,
-  activeTask,
-  linkedTaskIds = [],
-  selectedTaskIds = [],
   onProjectSelect,
   onProjectAdded,
   onProjectDeleted,
-  onLinkSelectedTasks,
-  onUnlinkSelectedTasks,
 }) {
   const [newProjectName, setNewProjectName] = useState("");
   const [error, setError] = useState("");
@@ -178,51 +173,6 @@ function ProjectManager({
           </motion.li>
         ))}
       </ul>
-
-      {activeProject && (
-        <div className="project-link-panel">
-          <div className="form-label">
-            {activeProject.is_builtin === 1
-              ? "No Project Links"
-              : "Project Links"}
-          </div>
-          <p className="project-link-help">
-            {activeProject.is_builtin === 1
-              ? "Link tasks explicitly to include them under No Project."
-              : "Link tasks explicitly to include them under this project."}
-          </p>
-          <div className="project-link-actions">
-            <button
-              type="button"
-              className={`project-link-btn ${
-                selectedTaskIds.length > 0 &&
-                selectedTaskIds.every((id) => linkedTaskIds.includes(id))
-                  ? "end-btn"
-                  : "play-btn"
-              }`}
-              onClick={() => {
-                if (selectedTaskIds.length === 0) return;
-                if (selectedTaskIds.every((id) => linkedTaskIds.includes(id))) {
-                  onUnlinkSelectedTasks?.();
-                } else {
-                  onLinkSelectedTasks?.();
-                }
-              }}
-              disabled={selectedTaskIds.length === 0}
-            >
-              {selectedTaskIds.length > 0 &&
-              selectedTaskIds.every((id) => linkedTaskIds.includes(id))
-                ? "Unlink Selected Tasks"
-                : "Link Selected Tasks"}
-            </button>
-          </div>
-          {selectedTaskIds.length > 0 && (
-            <span className="project-link-count">
-              {selectedTaskIds.length} selected
-            </span>
-          )}
-        </div>
-      )}
 
       <form onSubmit={handleAddProject} className="project-form">
         <div className="form-label">
