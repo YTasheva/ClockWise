@@ -51,11 +51,12 @@ A web-based time tracking application that helps you keep track of how much time
 
 ## Features
 
-- **Project Management** - Create and organize projects (includes a built-in "No Project" for unassigned tasks)
-- **Task Management** - Add tasks to projects with quick switching between tasks and projects
+- **Project Management** - Create and organize projects (includes a built-in "No Project")
+- **Task Management** - Add tasks and link a single task per project via checkbox
 - **Real-time Timer** - Track time with minute-level precision (HH:MM format)
-- **Daily Summary** - View total time spent on each task, project, and task-per-project
-- **Daily Isolation** - Data is organized by day with a 4 AM boundary (time before 4 AM belongs to the previous day)
+- **Daily Summary** - View total time by task, by project, by task-per-project, plus a chronological entries list
+- **Daily Isolation** - Data is organized by day with a 4 AM boundary and proper overlap handling
+- **Timesheet PDF** - Generate a daily PDF with totals and chronological entries
 - **Persistent Storage** - All data is stored locally in SQLite
 
 ## Screenshot
@@ -116,21 +117,22 @@ A web-based time tracking application that helps you keep track of how much time
 ### Setup Your Projects and Tasks
 
 1. Use the **Projects** section to create projects (or use the default "No Project")
-2. Select a project and use the **Tasks** section to create tasks for that project
+2. Select a project and use the **Tasks** section to create tasks
+3. Link a task to the selected project by checking its checkbox (one task per project)
 
 ### Track Time
 
 1. Click on a task in the **Tasks** section to select it
 2. In the **Timer** section, click the **Start** button to begin tracking
-3. The timer will show elapsed time in HH:MM format
+3. The timer will show elapsed time in HH:MM:SS format
 4. Click **End** to stop tracking and record the entry
    - Entries shorter than 1 minute are automatically discarded
 
 ### Quick Task Switching
 
-- **1 click to switch tasks in same project:** Click a different task in the current project
-- **1 click to switch projects for same task:** Select a different project, then click the active task again
-- **2 clicks for different task+project:** Select the new project, then click the desired task
+- Use **Quick Task Switching** to set the active task for the timer
+- Quick switch auto-links the task to the selected project and starts timing
+- If a timer is running, it ends it and switches to the new task automatically
 
 ### View Daily Totals
 
@@ -139,7 +141,7 @@ The **Daily Summary** section shows:
 - **Total Time by Task** - Time spent on each task
 - **Total Time by Project** - Time spent on each project
 - **Total Time by Task per Project** - Breakdown of each task within each project
-c
+- **Today's Entries (Chronological)** - Start/end times with durations
 ## Data Storage
 
 All data is stored locally in a SQLite database at:
@@ -154,6 +156,7 @@ All data is stored locally in a SQLite database at:
 - **Minimum duration:** Entries must be at least 1 minute to be recorded
 - **Non-overlapping tasks:** Starting a new task automatically ends the previous one
 - **Daily boundary:** New days start at 4 AM (time before 4 AM belongs to the previous day)
+- **Overlap handling:** Entries spanning multiple days are split into the correct day window
 
 ## Architecture
 
@@ -178,7 +181,7 @@ All data is stored locally in a SQLite database at:
 | POST | `/api/timer/start` | Start timer for task |
 | POST | `/api/timer/end` | End active timer |
 | GET | `/api/totals` | Daily totals summary |
-| GET | `/api/timesheet/entries` | Daily time entries |
+| GET | `/api/timesheet/entries` | Daily time entries (chronological) |
 
 ## Project Structure
 
