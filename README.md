@@ -1,5 +1,14 @@
+<p align="center">
+  <a href="https://yuliya-tasheva.co.uk/">
+    <img src=".src/clockwise-banner.png" width="900px" alt="ClockWise - Time Tracking Application">
+  </a>
+</p>
+
 <h1 align="center">ClockWise</h1>
-  <br>
+
+<h3 align="center">Time Tracking Application</h3>
+
+  <p align="center">
   <a href="https://github.com/ytasheva">
       <img src="https://img.shields.io/badge/SayThanks.io-%E2%98%BC-1EAEDB.svg?style=for-the-badge" alt=""></a>
   <a href="https://github.com/ytasheva/ClockWise/graphs/contributors">
@@ -8,18 +17,19 @@
       <img src="https://img.shields.io/github/issues/ytasheva/ClockWise.svg?style=for-the-badge" alt=""></a>
   <a href="https://github.com/ytasheva/ClockWise/network/members">
       <img src="https://img.shields.io/github/forks/ytasheva/ClockWise.svg?style=for-the-badge" alt=""></a>
+  <a href="https://github.com/ytasheva/ClockWise/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/ytasheva/clockwise?style=for-the-badge" alt="License"></a> 
+</p>
 
-## 📬 Connect With Us
+<p align="center">
+  <a href="https://www.linkedin.com/in/yuliya-stella-tasheva" target="_blank">
+    <img src="https://img.shields.io/badge/-Follow%20on%20LinkedIn-0077B5?logo=linkedin&style=flat-square" alt="Follow on LinkedIn"></a>
+  <img src="https://img.shields.io/github/last-commit/ytasheva/clockwise?style=flat-square&color=green" alt="Last Commit">
+</p>
 
-<div align="center">
-  <a href="https://yuliya-tasheva.co.uk" target="_blank">
-    <img src="https://img.shields.io/badge/🌐_Website-yuliya-tasheva.co.uk-0066CC?style=for-the-badge" alt="Website">
-  </a>
-  <a href="https://www.linkedin.com/company/yuliya-stella-tasheva" target="_blank">
-    <img src="https://img.shields.io/badge/LinkedIn-yuliya-stella-tasheva-0077B5?style=for-the-badge&logo=linkedin" alt="LinkedIn">
-  </a>
-</div>
-
+<p align="center">
+  <b>🌟 If you find this helpful, please star this repo — it helps others discover these resources!</b>
+</p>
 
 ## Table of contents
 
