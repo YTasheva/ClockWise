@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://yuliya-tasheva.co.uk/">
-    <img src=".src/clockwise-banner.png" width="900px" alt="ClockWise - Time Tracking Application">
+    <img src="frontend/src/clockwise-banner.png" width="900px" alt="ClockWise - Time Tracking Application">
   </a>
 </p>
 
