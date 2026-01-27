@@ -247,6 +247,34 @@ app.post("/api/projects/:projectId/tasks/:taskId", async (req, res) => {
   }
 });
 
+app.delete("/api/projects/:projectId/tasks/:taskId", async (req, res) => {
+  try {
+    const { projectId, taskId } = req.params;
+
+    const project = await dbGet(
+      "SELECT id FROM projects WHERE id = ?",
+      [projectId]
+    );
+    if (!project) {
+      return res.status(404).json({ error: "Project not found" });
+    }
+
+    const task = await dbGet("SELECT id FROM tasks WHERE id = ?", [taskId]);
+    if (!task) {
+      return res.status(404).json({ error: "Task not found" });
+    }
+
+    await dbRun(
+      "DELETE FROM task_projects WHERE task_id = ? AND project_id = ?",
+      [taskId, projectId]
+    );
+
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // ============= TIMER API =============
 
 app.get("/api/timer/current", async (req, res) => {
