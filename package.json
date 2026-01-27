@@ -5,5 +5,8 @@
     "test": "npx vitest run --no-cache",
     "test:watch": "npx vitest",
     "dev": "node scripts/dev.js"
+  },
+  "dependencies": {
+    "@openai/codex": "^0.92.0"
   }
 }
