@@ -5,7 +5,9 @@ import {
   getTodayDate,
   calculateDurationMinutes,
   isValidDuration,
-  formatDuration,
+  getDateRangeForDay,
+  isValidDateString,
+  buildDailySummary,
 } from "./utils.js";
 
 const app = express();
@@ -398,62 +400,40 @@ app.post("/api/timer/end", async (req, res) => {
 
 app.get("/api/totals", async (req, res) => {
   try {
-    const today = getTodayDate();
+    const requestedDate = req.query.date;
+    const day = isValidDateString(requestedDate)
+      ? requestedDate
+      : getTodayDate();
+    const dayRange = getDateRangeForDay(day);
 
-    // Total by task
-    const byTask = await dbAll(
-      `SELECT t.id, t.name, 
-              SUM(te.duration_minutes) as total_minutes
-       FROM tasks t
-       LEFT JOIN time_entries te ON t.id = te.task_id AND te.date = ?
-       WHERE t.id IN (
-         SELECT DISTINCT task_id FROM time_entries WHERE date = ?
-       )
-       GROUP BY t.id
-       ORDER BY total_minutes DESC`,
-      [today, today]
-    );
+    if (!dayRange) {
+      return res.status(400).json({ error: "Invalid date format" });
+    }
 
-    // Total by project
-    const byProject = await dbAll(
-      `SELECT p.id, p.name, SUM(te.duration_minutes) as total_minutes
-       FROM projects p
-       LEFT JOIN task_projects tp ON p.id = tp.project_id
-       LEFT JOIN tasks t ON tp.task_id = t.id
-       LEFT JOIN time_entries te ON t.id = te.task_id AND te.date = ?
-       WHERE p.id IN (
-         SELECT DISTINCT p.id FROM projects p
-         LEFT JOIN task_projects tp ON p.id = tp.project_id
-         LEFT JOIN tasks t ON tp.task_id = t.id
-         LEFT JOIN time_entries te ON t.id = te.task_id
-         WHERE te.date = ?
-       )
-       GROUP BY p.id
-       ORDER BY p.is_builtin DESC, p.name`,
-      [today, today]
-    );
-
-    // Total by task per project
-    const byTaskPerProject = await dbAll(
-      `SELECT p.id as project_id, p.name as project_name, t.id as task_id, t.name as task_name,
-              SUM(te.duration_minutes) as total_minutes
-       FROM tasks t
+    const { start: dayStart, end: dayEnd } = dayRange;
+    const timeEntries = await dbAll(
+      `SELECT te.id, te.task_id, te.start_time, te.end_time, te.duration_minutes,
+              t.name as task_name,
+              GROUP_CONCAT(tp.project_id) as project_ids
+       FROM time_entries te
+       JOIN tasks t ON te.task_id = t.id
        LEFT JOIN task_projects tp ON t.id = tp.task_id
-       LEFT JOIN projects p ON tp.project_id = p.id
-       LEFT JOIN time_entries te ON t.id = te.task_id AND te.date = ?
-       WHERE t.id IN (
-         SELECT DISTINCT task_id FROM time_entries WHERE date = ?
-       ) AND tp.task_id IS NOT NULL
-       GROUP BY p.id, t.id
-       ORDER BY p.is_builtin DESC, p.name, total_minutes DESC`,
-      [today, today]
+       WHERE te.start_time < ? AND te.end_time IS NOT NULL AND te.end_time > ?
+       GROUP BY te.id`,
+      [dayEnd.toISOString(), dayStart.toISOString()]
     );
 
-    res.json({
-      byTask,
-      byProject,
-      byTaskPerProject,
+    const projects = await dbAll(
+      "SELECT id, name, is_builtin FROM projects ORDER BY is_builtin DESC, name"
+    );
+
+    const { byTask, byProject, byTaskPerProject } = buildDailySummary({
+      entries: timeEntries,
+      projects,
+      dayRange: { start: dayStart, end: dayEnd },
     });
+
+    res.json({ byTask, byProject, byTaskPerProject, date: day });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -463,19 +443,37 @@ app.get("/api/totals", async (req, res) => {
 
 app.get("/api/timesheet/entries", async (req, res) => {
   try {
-    const today = getTodayDate();
+    const requestedDate = req.query.date;
+    const day = isValidDateString(requestedDate)
+      ? requestedDate
+      : getTodayDate();
+    const dayRange = getDateRangeForDay(day);
 
-    // Get all time entries for today in chronological order
+    if (!dayRange) {
+      return res.status(400).json({ error: "Invalid date format" });
+    }
+
+    // Get time entries that overlap with the selected day window
     const entries = await dbAll(
       `SELECT te.id, te.task_id, te.start_time, te.end_time, te.duration_minutes, t.name as task_name
        FROM time_entries te
        JOIN tasks t ON te.task_id = t.id
-       WHERE te.date = ?
+       WHERE te.start_time < ? AND te.end_time IS NOT NULL AND te.end_time > ?
        ORDER BY te.start_time ASC`,
-      [today]
+      [dayRange.end.toISOString(), dayRange.start.toISOString()]
     );
 
-    res.json(entries || []);
+    const entriesWithOverlap = (entries || []).map((entry) => ({
+      ...entry,
+      overlap_minutes: calculateOverlapMinutes(
+        entry.start_time,
+        entry.end_time,
+        dayRange.start,
+        dayRange.end
+      ),
+    }));
+
+    res.json(entriesWithOverlap);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
