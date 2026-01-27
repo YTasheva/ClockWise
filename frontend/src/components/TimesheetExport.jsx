@@ -219,9 +219,11 @@ function TimesheetExport() {
             entry.task_name,
             startTime,
             endTime,
-            entry.duration_minutes
-              ? formatDuration(entry.duration_minutes)
-              : "N/A",
+            Number.isFinite(entry.overlap_minutes)
+              ? formatDuration(entry.overlap_minutes)
+              : entry.duration_minutes
+                ? formatDuration(entry.duration_minutes)
+                : "N/A",
           ];
         });
 
