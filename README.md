@@ -9,6 +9,18 @@
   <a href="https://github.com/ytasheva/ClockWise/network/members">
       <img src="https://img.shields.io/github/forks/ytasheva/ClockWise.svg?style=for-the-badge" alt=""></a>
 
+## 📬 Connect With Us
+
+<div align="center">
+  <a href="https://yuliya-tasheva.co.uk" target="_blank">
+    <img src="https://img.shields.io/badge/🌐_Website-yuliya-tasheva.co.uk-0066CC?style=for-the-badge" alt="Website">
+  </a>
+  <a href="https://www.linkedin.com/company/yuliya-stella-tasheva" target="_blank">
+    <img src="https://img.shields.io/badge/LinkedIn-yuliya-stella-tasheva-0077B5?style=for-the-badge&logo=linkedin" alt="LinkedIn">
+  </a>
+</div>
+
+
 ## Table of contents
 
 - [Overview](#overview)
@@ -127,7 +139,7 @@ The **Daily Summary** section shows:
 - **Total Time by Task** - Time spent on each task
 - **Total Time by Project** - Time spent on each project
 - **Total Time by Task per Project** - Breakdown of each task within each project
-
+c
 ## Data Storage
 
 All data is stored locally in a SQLite database at:
@@ -225,4 +237,4 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 > Email [info@yuliya-tasheva.co.uk](#) &nbsp;&middot;&nbsp;
 > Copyright &copy; 2026 All Rights Reserved. Site By Yuliya Tasheva&reg;
 
-**Thank you for using and contributing to the ClockWise app! Your support helps us continually improve and deliver the best shipping management experience.**
+  
