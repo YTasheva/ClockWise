@@ -55,6 +55,13 @@ body[data-theme="dark"] .task-edit-btn {
   color: var(--color-text);
 }
 
+body[data-theme="dark"] .form-control,
+body[data-theme="dark"] .project-form input,
+body[data-theme="dark"] .task-form input {
+  background: #121212;
+  border-color: #2b2b2b;
+}
+
 body[data-theme="dark"] .section {
   background: linear-gradient(160deg, #101010, #060606);
   border-color: rgba(224, 178, 74, 0.25);
@@ -328,6 +335,20 @@ body::before {
   margin-bottom: 18px;
 }
 
+.toast-notice {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: rgba(15, 15, 15, 0.95);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  z-index: 1000;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+}
+
 .timer-task-info .label {
   color: var(--color-muted);
   font-size: 0.85rem;
@@ -398,13 +419,6 @@ body[data-theme="dark"] .timer-time {
   flex-wrap: wrap;
 }
 
-.selection-note {
-  margin-top: 10px;
-  font-size: 0.85rem;
-  color: var(--color-muted);
-  text-align: center;
-  font-weight: 600;
-}
 
 .timer-controls .btn-icon {
   margin-right: 6px;
@@ -590,6 +604,14 @@ body[data-theme="dark"] .timer-time {
   border-right: 0;
 }
 
+.form-control:focus,
+.project-form input:focus,
+.task-form input:focus {
+  outline: none;
+  border-color: rgba(122, 13, 13, 0.85);
+  box-shadow: 0 0 0 3px rgba(122, 13, 13, 0.25);
+}
+
 .task-list {
   list-style: none;
   padding: 0;
@@ -659,33 +681,6 @@ body[data-theme="dark"] .timer-time {
   white-space: nowrap;
 }
 
-.project-link-panel {
-  border: 1px dashed var(--color-border);
-  border-radius: var(--radius-sm);
-  padding: 12px;
-  margin: 12px 0 16px;
-  background: var(--color-surface);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.project-link-actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.project-link-count {
-  font-size: 0.8rem;
-  color: var(--color-muted);
-}
-
-.project-link-help {
-  margin: 0;
-  font-size: 0.85rem;
-  color: var(--color-muted);
-}
 
 .task-label {
   display: inline-flex;
@@ -699,23 +694,6 @@ body[data-theme="dark"] .timer-time {
   accent-color: var(--color-accent);
 }
 
-.link-status-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: rgba(212, 167, 58, 0.18);
-  border: 1px solid rgba(212, 167, 58, 0.6);
-  color: #111111;
-}
-
-body[data-theme="dark"] .link-status-icon {
-  color: #f6eee6;
-  background: rgba(224, 178, 74, 0.2);
-  border-color: rgba(224, 178, 74, 0.6);
-}
 
 .task-edit-btn,
 .task-delete-btn {
@@ -815,6 +793,49 @@ body[data-theme="dark"] .link-status-icon {
   font-family: "Courier New", monospace;
 }
 
+.totals-accordion {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+
+.totals-accordion summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+  gap: 12px;
+}
+
+.totals-accordion summary::-webkit-details-marker {
+  display: none;
+}
+
+.totals-accordion summary::after {
+  content: "▾";
+  margin-left: auto;
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  transition: transform 0.2s ease;
+}
+
+.totals-accordion[open] summary::after {
+  transform: rotate(180deg);
+}
+
+.totals-accordion-count {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  font-weight: 600;
+}
+
+.totals-accordion-body {
+  padding: 6px 12px 12px;
+}
+
 .timesheet-export {
   display: flex;
   align-items: center;
@@ -911,9 +932,6 @@ body[data-theme="dark"] .end-btn:hover {
   backdrop-filter: blur(12px);
 }
 
-.project-link-actions .project-link-btn {
-  text-shadow: none;
-}
 
 .btn-danger {
   background: rgba(122, 13, 13, 0.85);
