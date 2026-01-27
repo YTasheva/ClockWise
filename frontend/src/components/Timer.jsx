@@ -7,6 +7,7 @@ function Timer({
   activeTask,
   activeProject,
   tasks,
+  selectedTaskIds = [],
   onTaskSelect,
   onTimerStarted,
   onTimerEnded,
@@ -171,6 +172,11 @@ function Timer({
             </>
           )}
         </div>
+        {!currentTimer?.active && selectedTaskIds.length > 1 && (
+          <div className="selection-note">
+            {selectedTaskIds.length} tasks selected (linking only)
+          </div>
+        )}
       </motion.div>
 
       {!currentTimer?.active && (
