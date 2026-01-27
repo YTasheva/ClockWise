@@ -237,6 +237,9 @@ app.post("/api/projects/:projectId/tasks/:taskId", async (req, res) => {
       return res.status(404).json({ error: "Task not found" });
     }
 
+    // Enforce one-task-per-project by removing existing links for the project
+    await dbRun("DELETE FROM task_projects WHERE project_id = ?", [projectId]);
+
     await dbRun(
       "INSERT OR IGNORE INTO task_projects (task_id, project_id) VALUES (?, ?)",
       [taskId, projectId]
