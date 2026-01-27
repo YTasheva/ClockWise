@@ -7,6 +7,7 @@ function Timer({
   activeTask,
   activeProject,
   tasks,
+  onTaskSelect,
   onTimerStarted,
   onTimerEnded,
 }) {
@@ -192,7 +193,10 @@ function Timer({
                   className={`task-quick-btn ${
                     selectedTask?.id === task.id ? "active" : ""
                   }`}
-                  onClick={() => setSelectedTask(task)}
+                  onClick={() => {
+                    setSelectedTask(task);
+                    onTaskSelect?.(task);
+                  }}
                   title={task.name}
                 >
                   {task.name}
