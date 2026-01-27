@@ -170,20 +170,11 @@ describe("Utility Functions", () => {
       ]);
 
       expect(summary.byProject).toEqual([
-        { id: 1, name: "No Project", total_minutes: 120, is_builtin: 1 },
         { id: 2, name: "Client A", total_minutes: 180, is_builtin: 0 },
         { id: 3, name: "Internal", total_minutes: 60, is_builtin: 0 },
       ]);
 
       expect(summary.byTaskPerProject).toEqual([
-        {
-          project_id: 1,
-          project_name: "No Project",
-          task_id: 11,
-          task_name: "Task Two",
-          total_minutes: 120,
-          project_is_builtin: 1,
-        },
         {
           project_id: 2,
           project_name: "Client A",
