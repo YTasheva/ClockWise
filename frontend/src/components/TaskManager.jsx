@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Link2, ListChecks, Pencil, Plus, Trash2 } from "lucide-react";
+import { ListChecks, Pencil, Plus, Trash2 } from "lucide-react";
 
 function TaskManager({
   tasks,
@@ -8,9 +8,7 @@ function TaskManager({
   activeProject,
   activeTask,
   linkedTaskIds = [],
-  selectedTaskIds = [],
   onTaskSelect,
-  onToggleTaskSelection,
   onTaskAdded,
   onTaskDeleted,
   onTaskLinked,
@@ -50,28 +48,8 @@ function TaskManager({
       const data = await response.json();
       setNewTaskName("");
       onTaskAdded();
-
-      if (activeProject?.id) {
-        await linkTaskToProject(data.id, activeProject.id);
-        onTaskLinked?.();
-      }
     } catch (err) {
       setError("Error adding task: " + err.message);
-    }
-  };
-
-  const linkTaskToProject = async (taskId, projectId) => {
-    try {
-      const response = await fetch(
-        `/api/projects/${projectId}/tasks/${taskId}`,
-        { method: "POST" }
-      );
-      if (!response.ok) {
-        const data = await response.json();
-        setError(data.error || "Failed to link task to project");
-      }
-    } catch (err) {
-      setError("Error linking task: " + err.message);
     }
   };
 
@@ -123,9 +101,43 @@ function TaskManager({
       }
 
       onTaskDeleted();
-      onTaskLinked?.();
+      onTaskLinked?.({ action: "unlink" });
     } catch (err) {
       setError("Error deleting task: " + err.message);
+    }
+  };
+
+  const handleToggleTaskLink = async (task) => {
+    if (!activeProject?.id) {
+      onTaskSelect(task);
+      return;
+    }
+
+    onTaskSelect(task);
+
+    try {
+      const isLinked = linkedTaskIds.includes(task.id);
+      onTaskLinked?.({
+        action: isLinked ? "unlink" : "link",
+        taskId: isLinked ? null : task.id,
+        optimistic: true,
+      });
+      const response = await fetch(
+        `/api/projects/${activeProject.id}/tasks/${task.id}`,
+        { method: isLinked ? "DELETE" : "POST" }
+      );
+
+      if (!response.ok) {
+        const data = await response.json();
+        setError(data.error || "Failed to update project link");
+        onTaskLinked?.({ action: "refresh" });
+        return;
+      }
+
+      onTaskLinked?.({ action: "refresh" });
+    } catch (err) {
+      setError("Error updating project link: " + err.message);
+      onTaskLinked?.({ action: "refresh" });
     }
   };
 
@@ -141,11 +153,7 @@ function TaskManager({
             <motion.li
               key={task.id}
               className={`task-item ${
-                (activeProject?.is_builtin
-                  ? selectedTaskIds.includes(task.id)
-                  : activeTask?.id === task.id)
-                  ? "active"
-                  : ""
+                activeTask?.id === task.id ? "active" : ""
               }`}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -153,9 +161,7 @@ function TaskManager({
             >
               <div
                 style={{ flex: 1, cursor: "pointer" }}
-                onClick={() =>
-                  onTaskSelect(task)
-                }
+                onClick={() => onTaskSelect(task)}
               >
                 {editingId === task.id ? (
                   <input
@@ -174,14 +180,16 @@ function TaskManager({
                   />
                 ) : (
                   <div className="task-label">
-                    <input
-                      type="checkbox"
-                      className="task-select-checkbox"
-                      checked={selectedTaskIds.includes(task.id)}
-                      onChange={() => onToggleTaskSelection?.(task)}
-                      onClick={(e) => e.stopPropagation()}
-                      aria-label={`Select ${task.name}`}
-                    />
+                    {activeProject?.id && (
+                      <input
+                        type="checkbox"
+                        className="task-select-checkbox"
+                        checked={linkedTaskIds.includes(task.id)}
+                        onChange={() => handleToggleTaskLink(task)}
+                        onClick={(e) => e.stopPropagation()}
+                        aria-label={`Link ${task.name} to ${activeProject.name}`}
+                      />
+                    )}
                     <strong>
                       {task.name}
                       {linkedTaskIds.includes(task.id) && (
@@ -191,11 +199,6 @@ function TaskManager({
                   </div>
                 )}
               </div>
-              {activeProject?.id && linkedTaskIds.includes(task.id) && (
-                <span className="link-status-icon" title="Linked">
-                  <Link2 size={14} aria-hidden="true" />
-                </span>
-              )}
               <div className="task-actions">
                 <button
                   className="task-edit-btn"
