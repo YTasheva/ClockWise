@@ -46,20 +46,6 @@ db.run("PRAGMA foreign_keys = ON");
 export function initializeDatabase() {
   return new Promise((resolve, reject) => {
     db.serialize(() => {
-      // Drop old tables if they exist (for migration)
-      db.run("DROP TABLE IF EXISTS time_entries", (err) => {
-        if (err) console.log("Dropping time_entries:", err);
-      });
-      db.run("DROP TABLE IF EXISTS task_projects", (err) => {
-        if (err) console.log("Dropping task_projects:", err);
-      });
-      db.run("DROP TABLE IF EXISTS tasks", (err) => {
-        if (err) console.log("Dropping tasks:", err);
-      });
-      db.run("DROP TABLE IF EXISTS projects", (err) => {
-        if (err) console.log("Dropping projects:", err);
-      });
-
       // Projects table
       db.run(
         `
