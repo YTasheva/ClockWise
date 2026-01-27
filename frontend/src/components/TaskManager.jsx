@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { ListChecks, Pencil, Plus, Trash2 } from "lucide-react";
+import { Link2, ListChecks, Pencil, Plus, Trash2 } from "lucide-react";
 
 function TaskManager({
   tasks,
@@ -8,7 +8,9 @@ function TaskManager({
   activeProject,
   activeTask,
   linkedTaskIds = [],
+  selectedTaskIds = [],
   onTaskSelect,
+  onToggleTaskSelection,
   onTaskAdded,
   onTaskDeleted,
   onTaskLinked,
@@ -139,7 +141,11 @@ function TaskManager({
             <motion.li
               key={task.id}
               className={`task-item ${
-                activeTask?.id === task.id ? "active" : ""
+                (activeProject?.is_builtin
+                  ? selectedTaskIds.includes(task.id)
+                  : activeTask?.id === task.id)
+                  ? "active"
+                  : ""
               }`}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -147,7 +153,9 @@ function TaskManager({
             >
               <div
                 style={{ flex: 1, cursor: "pointer" }}
-                onClick={() => onTaskSelect(task)}
+                onClick={() =>
+                  onTaskSelect(task)
+                }
               >
                 {editingId === task.id ? (
                   <input
@@ -165,14 +173,29 @@ function TaskManager({
                     style={{ maxWidth: "300px" }}
                   />
                 ) : (
-                  <strong>
-                    {task.name}
-                    {linkedTaskIds.includes(task.id) && (
-                      <span className="linked-dot" aria-hidden="true" />
-                    )}
-                  </strong>
+                  <div className="task-label">
+                    <input
+                      type="checkbox"
+                      className="task-select-checkbox"
+                      checked={selectedTaskIds.includes(task.id)}
+                      onChange={() => onToggleTaskSelection?.(task)}
+                      onClick={(e) => e.stopPropagation()}
+                      aria-label={`Select ${task.name}`}
+                    />
+                    <strong>
+                      {task.name}
+                      {linkedTaskIds.includes(task.id) && (
+                        <span className="linked-dot" aria-hidden="true" />
+                      )}
+                    </strong>
+                  </div>
                 )}
               </div>
+              {activeProject?.id && linkedTaskIds.includes(task.id) && (
+                <span className="link-status-icon" title="Linked">
+                  <Link2 size={14} aria-hidden="true" />
+                </span>
+              )}
               <div className="task-actions">
                 <button
                   className="task-edit-btn"
