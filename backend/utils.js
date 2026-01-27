@@ -95,9 +95,6 @@ export function buildDailySummary({ entries, projects, dayRange }) {
   const projectById = new Map(
     projects.map((project) => [project.id, project])
   );
-  const noProject = projects.find((project) => project.is_builtin);
-  const noProjectId = noProject?.id ?? null;
-
   const taskTotals = new Map();
   const projectTotals = new Map();
   const taskProjectTotals = new Map();
@@ -125,10 +122,9 @@ export function buildDailySummary({ entries, projects, dayRange }) {
     const projectIds = entry.project_ids
       ? entry.project_ids.split(",").map((value) => Number(value))
       : [];
-    const effectiveProjectIds =
-      projectIds.length > 0 ? projectIds : noProjectId ? [noProjectId] : [];
+    if (projectIds.length === 0) return;
 
-    effectiveProjectIds.forEach((projectId) => {
+    projectIds.forEach((projectId) => {
       const project = projectById.get(projectId);
       if (!project) return;
 
