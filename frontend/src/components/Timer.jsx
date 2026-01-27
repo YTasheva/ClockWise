@@ -6,14 +6,16 @@ function Timer({
   currentTimer,
   activeTask,
   activeProject,
+  linkedTaskIds = [],
   tasks,
-  selectedTaskIds = [],
   onTaskSelect,
+  onProjectLinkChange,
   onTimerStarted,
   onTimerEnded,
 }) {
   const [elapsedTime, setElapsedTime] = useState("00:00:00");
   const [selectedTask, setSelectedTask] = useState(null);
+  const [toast, setToast] = useState("");
 
   const formatElapsed = (totalSeconds) => {
     const hours = Math.floor(totalSeconds / 3600);
@@ -58,10 +60,26 @@ function Timer({
     }
   }, [currentTimer?.active, currentTimer?.elapsed_minutes]);
 
-  const handleStartTimer = async (taskId) => {
+  useEffect(() => {
+    if (!toast) return;
+    const timer = setTimeout(() => setToast(""), 2000);
+    return () => clearTimeout(timer);
+  }, [toast]);
+
+  const handleStartTimer = async (taskId, options = {}) => {
     if (!taskId) {
       alert("Please select a task");
       return;
+    }
+    if (!options.skipProjectCheck && activeProject?.id) {
+      if (linkedTaskIds.length === 0) {
+        alert("Link a task to this project before starting the timer.");
+        return;
+      }
+      if (!linkedTaskIds.includes(taskId)) {
+        alert("Start the linked task for this project.");
+        return;
+      }
     }
 
     try {
@@ -104,8 +122,43 @@ function Timer({
     }
   };
 
+  const handleQuickSwitchTask = async (task) => {
+    if (currentTimer?.active) {
+      await handleEndTimer();
+    }
+
+    if (activeProject?.id && !linkedTaskIds.includes(task.id)) {
+      try {
+        const response = await fetch(
+          `/api/projects/${activeProject.id}/tasks/${task.id}`,
+          { method: "POST" }
+        );
+        if (!response.ok) {
+          const data = await response.json();
+          setToast(data.error || "Failed to link task to project.");
+          return;
+        }
+        onProjectLinkChange?.({
+          action: "link",
+          taskId: task.id,
+          optimistic: true,
+        });
+        onTaskSelect?.(task);
+      } catch (err) {
+        setToast("Error linking task: " + err.message);
+        return;
+      }
+    }
+
+    setSelectedTask(task);
+    onTaskSelect?.(task);
+    await handleStartTimer(task.id, { skipProjectCheck: true });
+    setToast(`Switched to ${task.name}`);
+  };
+
   return (
     <div>
+      {toast && <div className="toast-notice">{toast}</div>}
       <motion.div
         className="timer-display"
         initial={{ opacity: 0, y: 10 }}
@@ -172,46 +225,36 @@ function Timer({
             </>
           )}
         </div>
-        {!currentTimer?.active && selectedTaskIds.length > 1 && (
-          <div className="selection-note">
-            {selectedTaskIds.length} tasks selected (linking only)
-          </div>
-        )}
       </motion.div>
 
-      {!currentTimer?.active && (
-        <motion.div
-          className="task-selector"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.1 }}
-        >
-          <h3>Quick Select All Tasks</h3>
-          <div className="task-quick-select">
-            {tasks.length === 0 ? (
-              <p style={{ fontSize: "0.85rem", color: "#95a5a6" }}>
-                No tasks defined
-              </p>
-            ) : (
-              tasks.map((task) => (
-                <button
-                  key={task.id}
-                  className={`task-quick-btn ${
-                    selectedTask?.id === task.id ? "active" : ""
-                  }`}
-                  onClick={() => {
-                    setSelectedTask(task);
-                    onTaskSelect?.(task);
-                  }}
-                  title={task.name}
-                >
-                  {task.name}
-                </button>
-              ))
-            )}
-          </div>
-        </motion.div>
-      )}
+      <motion.div
+        className="task-selector"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.1 }}
+      >
+        <h3>Quick Task Switching</h3>
+        <div className="task-quick-select">
+          {tasks.length === 0 ? (
+            <p style={{ fontSize: "0.85rem", color: "#95a5a6" }}>
+              No tasks defined
+            </p>
+          ) : (
+            tasks.map((task) => (
+              <button
+                key={task.id}
+                className={`task-quick-btn ${
+                  selectedTask?.id === task.id ? "active" : ""
+                }`}
+                onClick={() => handleQuickSwitchTask(task)}
+                title={task.name}
+              >
+                {task.name}
+              </button>
+            ))
+          )}
+        </div>
+      </motion.div>
     </div>
   );
 }
