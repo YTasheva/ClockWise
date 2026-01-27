@@ -7,11 +7,12 @@ function ProjectManager({
   activeProject,
   activeTask,
   linkedTaskIds = [],
+  selectedTaskIds = [],
   onProjectSelect,
   onProjectAdded,
   onProjectDeleted,
-  onLinkActiveTask,
-  onUnlinkActiveTask,
+  onLinkSelectedTasks,
+  onUnlinkSelectedTasks,
 }) {
   const [newProjectName, setNewProjectName] = useState("");
   const [error, setError] = useState("");
@@ -178,26 +179,48 @@ function ProjectManager({
         ))}
       </ul>
 
-      {activeProject?.is_builtin === 1 && (
+      {activeProject && (
         <div className="project-link-panel">
-          <div className="form-label">No Project Links</div>
+          <div className="form-label">
+            {activeProject.is_builtin === 1
+              ? "No Project Links"
+              : "Project Links"}
+          </div>
           <p className="project-link-help">
-            Link tasks explicitly to include them under No Project.
+            {activeProject.is_builtin === 1
+              ? "Link tasks explicitly to include them under No Project."
+              : "Link tasks explicitly to include them under this project."}
           </p>
-          <button
-            type="button"
-            className="btn btn-info"
-            onClick={() =>
-              linkedTaskIds.includes(activeTask?.id)
-                ? onUnlinkActiveTask?.()
-                : onLinkActiveTask?.()
-            }
-            disabled={!activeTask}
-          >
-            {linkedTaskIds.includes(activeTask?.id)
-              ? "Unlink Selected Task"
-              : "Link Selected Task"}
-          </button>
+          <div className="project-link-actions">
+            <button
+              type="button"
+              className={`project-link-btn ${
+                selectedTaskIds.length > 0 &&
+                selectedTaskIds.every((id) => linkedTaskIds.includes(id))
+                  ? "end-btn"
+                  : "play-btn"
+              }`}
+              onClick={() => {
+                if (selectedTaskIds.length === 0) return;
+                if (selectedTaskIds.every((id) => linkedTaskIds.includes(id))) {
+                  onUnlinkSelectedTasks?.();
+                } else {
+                  onLinkSelectedTasks?.();
+                }
+              }}
+              disabled={selectedTaskIds.length === 0}
+            >
+              {selectedTaskIds.length > 0 &&
+              selectedTaskIds.every((id) => linkedTaskIds.includes(id))
+                ? "Unlink Selected Tasks"
+                : "Link Selected Tasks"}
+            </button>
+          </div>
+          {selectedTaskIds.length > 0 && (
+            <span className="project-link-count">
+              {selectedTaskIds.length} selected
+            </span>
+          )}
         </div>
       )}
 
