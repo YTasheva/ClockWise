@@ -31,7 +31,6 @@ function App() {
   const [linkedTaskIds, setLinkedTaskIds] = useState([]);
   const [activeProject, setActiveProject] = useState(null);
   const [activeTask, setActiveTask] = useState(null);
-  const [selectedTaskIds, setSelectedTaskIds] = useState([]);
   const [currentTimer, setCurrentTimer] = useState(null);
   const [refreshTotals, setRefreshTotals] = useState(0);
   const [error, setError] = useState(null);
@@ -80,11 +79,9 @@ function App() {
     if (activeProject?.id) {
       fetchProjectTasks(activeProject.id);
       setActiveTask(null);
-      setSelectedTaskIds([]);
     } else {
       setLinkedTaskIds([]);
       setActiveTask(null);
-      setSelectedTaskIds([]);
     }
   }, [activeProject]);
 
@@ -161,69 +158,32 @@ function App() {
     setRefreshTotals((prev) => prev + 1);
   };
 
+  const handleTaskLinkChange = (payload) => {
+    if (!activeProject?.id) return;
+    if (payload?.action === "link" && payload.taskId) {
+      setLinkedTaskIds([payload.taskId]);
+      if (!payload?.optimistic) {
+        fetchProjectTasks(activeProject.id);
+      }
+      return;
+    }
+
+    if (payload?.action === "unlink") {
+      setLinkedTaskIds([]);
+      if (!payload?.optimistic) {
+        fetchProjectTasks(activeProject.id);
+      }
+      return;
+    }
+
+    if (payload?.action === "refresh") {
+      fetchProjectTasks(activeProject.id);
+    }
+  };
+
   const handleTaskSelect = async (task) => {
     if (!task) return;
     setActiveTask(task);
-  };
-
-  const handleToggleTaskSelection = (task) => {
-    if (!task) return;
-    setActiveTask(task);
-    setSelectedTaskIds((prev) =>
-      prev.includes(task.id)
-        ? prev.filter((id) => id !== task.id)
-        : [...prev, task.id]
-    );
-  };
-
-  const handleLinkSelectedTasksToProject = async () => {
-    if (!activeProject?.id || selectedTaskIds.length === 0) return;
-    const tasksToLink = selectedTaskIds.filter(
-      (taskId) => !linkedTaskIds.includes(taskId)
-    );
-    if (tasksToLink.length === 0) return;
-    try {
-      await Promise.all(
-        tasksToLink.map(async (taskId) => {
-          const response = await fetch(
-            `/api/projects/${activeProject.id}/tasks/${taskId}`,
-            { method: "POST" }
-          );
-          if (!response.ok) {
-            const data = await response.json();
-            console.error("Link task error:", data.error);
-          }
-        })
-      );
-      fetchProjectTasks(activeProject.id);
-    } catch (error) {
-      console.error("Error linking task:", error);
-    }
-  };
-
-  const handleUnlinkSelectedTasksFromProject = async () => {
-    if (!activeProject?.id || selectedTaskIds.length === 0) return;
-    const tasksToUnlink = selectedTaskIds.filter((taskId) =>
-      linkedTaskIds.includes(taskId)
-    );
-    if (tasksToUnlink.length === 0) return;
-    try {
-      await Promise.all(
-        tasksToUnlink.map(async (taskId) => {
-          const response = await fetch(
-            `/api/projects/${activeProject.id}/tasks/${taskId}`,
-            { method: "DELETE" }
-          );
-          if (!response.ok) {
-            const data = await response.json();
-            console.error("Unlink task error:", data.error);
-          }
-        })
-      );
-      fetchProjectTasks(activeProject.id);
-    } catch (error) {
-      console.error("Error unlinking task:", error);
-    }
   };
 
   const handleTimerStarted = () => {
@@ -304,9 +264,10 @@ function App() {
                 currentTimer={currentTimer}
                 activeTask={activeTask}
                 activeProject={activeProject}
+                linkedTaskIds={linkedTaskIds}
                 tasks={tasks}
-                selectedTaskIds={selectedTaskIds}
                 onTaskSelect={handleTaskSelect}
+                onProjectLinkChange={handleTaskLinkChange}
                 onTimerStarted={handleTimerStarted}
                 onTimerEnded={handleTimerEnded}
               />
@@ -323,11 +284,6 @@ function App() {
                   </span>
                   Today's Totals
                 </h2>
-                {selectedTaskIds.length > 1 && (
-                  <span className="selection-note">
-                    {selectedTaskIds.length} tasks selected (linking only)
-                  </span>
-                )}
               </div>
               <Totals refreshKey={refreshTotals} />
             </motion.section>
@@ -355,14 +311,9 @@ function App() {
                   <ProjectManager
                     projects={projects}
                     activeProject={activeProject}
-                    activeTask={activeTask}
-                    linkedTaskIds={linkedTaskIds}
-                    selectedTaskIds={selectedTaskIds}
                     onProjectSelect={setActiveProject}
                     onProjectAdded={handleProjectAdded}
                     onProjectDeleted={handleProjectDeleted}
-                    onLinkSelectedTasks={handleLinkSelectedTasksToProject}
-                    onUnlinkSelectedTasks={handleUnlinkSelectedTasksFromProject}
                   />
                 </div>
                 <div className="manage-panel manage-panel-tasks">
@@ -378,14 +329,10 @@ function App() {
                     activeProject={activeProject}
                     activeTask={activeTask}
                     linkedTaskIds={linkedTaskIds}
-                    selectedTaskIds={selectedTaskIds}
                     onTaskSelect={handleTaskSelect}
-                    onToggleTaskSelection={handleToggleTaskSelection}
                     onTaskAdded={handleTaskAdded}
                     onTaskDeleted={handleTaskDeleted}
-                    onTaskLinked={() =>
-                      activeProject?.id && fetchProjectTasks(activeProject.id)
-                    }
+                    onTaskLinked={handleTaskLinkChange}
                   />
                 </div>
               </div>
