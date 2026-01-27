@@ -31,6 +31,7 @@ function App() {
   const [linkedTaskIds, setLinkedTaskIds] = useState([]);
   const [activeProject, setActiveProject] = useState(null);
   const [activeTask, setActiveTask] = useState(null);
+  const [selectedTaskIds, setSelectedTaskIds] = useState([]);
   const [currentTimer, setCurrentTimer] = useState(null);
   const [refreshTotals, setRefreshTotals] = useState(0);
   const [error, setError] = useState(null);
@@ -78,12 +79,12 @@ function App() {
   useEffect(() => {
     if (activeProject?.id) {
       fetchProjectTasks(activeProject.id);
-      if (!activeProject.is_builtin) {
-        setActiveTask(null);
-      }
+      setActiveTask(null);
+      setSelectedTaskIds([]);
     } else {
       setLinkedTaskIds([]);
       setActiveTask(null);
+      setSelectedTaskIds([]);
     }
   }, [activeProject]);
 
@@ -162,61 +163,63 @@ function App() {
 
   const handleTaskSelect = async (task) => {
     if (!task) return;
-    if (
-      activeProject?.id &&
-      !linkedTaskIds.includes(task.id) &&
-      !activeProject.is_builtin
-    ) {
-      try {
-        const response = await fetch(
-          `/api/projects/${activeProject.id}/tasks/${task.id}`,
-          { method: "POST" }
-        );
-        if (!response.ok) {
-          const data = await response.json();
-          console.error("Link task error:", data.error);
-        } else {
-          fetchProjectTasks(activeProject.id);
-        }
-      } catch (error) {
-        console.error("Error linking task:", error);
-      }
-    }
     setActiveTask(task);
   };
 
-  const handleLinkActiveTaskToProject = async () => {
-    if (!activeProject?.id || !activeTask?.id) return;
-    if (linkedTaskIds.includes(activeTask.id)) return;
+  const handleToggleTaskSelection = (task) => {
+    if (!task) return;
+    setActiveTask(task);
+    setSelectedTaskIds((prev) =>
+      prev.includes(task.id)
+        ? prev.filter((id) => id !== task.id)
+        : [...prev, task.id]
+    );
+  };
+
+  const handleLinkSelectedTasksToProject = async () => {
+    if (!activeProject?.id || selectedTaskIds.length === 0) return;
+    const tasksToLink = selectedTaskIds.filter(
+      (taskId) => !linkedTaskIds.includes(taskId)
+    );
+    if (tasksToLink.length === 0) return;
     try {
-      const response = await fetch(
-        `/api/projects/${activeProject.id}/tasks/${activeTask.id}`,
-        { method: "POST" }
+      await Promise.all(
+        tasksToLink.map(async (taskId) => {
+          const response = await fetch(
+            `/api/projects/${activeProject.id}/tasks/${taskId}`,
+            { method: "POST" }
+          );
+          if (!response.ok) {
+            const data = await response.json();
+            console.error("Link task error:", data.error);
+          }
+        })
       );
-      if (!response.ok) {
-        const data = await response.json();
-        console.error("Link task error:", data.error);
-        return;
-      }
       fetchProjectTasks(activeProject.id);
     } catch (error) {
       console.error("Error linking task:", error);
     }
   };
 
-  const handleUnlinkActiveTaskFromProject = async () => {
-    if (!activeProject?.id || !activeTask?.id) return;
-    if (!linkedTaskIds.includes(activeTask.id)) return;
+  const handleUnlinkSelectedTasksFromProject = async () => {
+    if (!activeProject?.id || selectedTaskIds.length === 0) return;
+    const tasksToUnlink = selectedTaskIds.filter((taskId) =>
+      linkedTaskIds.includes(taskId)
+    );
+    if (tasksToUnlink.length === 0) return;
     try {
-      const response = await fetch(
-        `/api/projects/${activeProject.id}/tasks/${activeTask.id}`,
-        { method: "DELETE" }
+      await Promise.all(
+        tasksToUnlink.map(async (taskId) => {
+          const response = await fetch(
+            `/api/projects/${activeProject.id}/tasks/${taskId}`,
+            { method: "DELETE" }
+          );
+          if (!response.ok) {
+            const data = await response.json();
+            console.error("Unlink task error:", data.error);
+          }
+        })
       );
-      if (!response.ok) {
-        const data = await response.json();
-        console.error("Unlink task error:", data.error);
-        return;
-      }
       fetchProjectTasks(activeProject.id);
     } catch (error) {
       console.error("Error unlinking task:", error);
@@ -302,6 +305,7 @@ function App() {
                 activeTask={activeTask}
                 activeProject={activeProject}
                 tasks={tasks}
+                selectedTaskIds={selectedTaskIds}
                 onTaskSelect={handleTaskSelect}
                 onTimerStarted={handleTimerStarted}
                 onTimerEnded={handleTimerEnded}
@@ -319,6 +323,11 @@ function App() {
                   </span>
                   Today's Totals
                 </h2>
+                {selectedTaskIds.length > 1 && (
+                  <span className="selection-note">
+                    {selectedTaskIds.length} tasks selected (linking only)
+                  </span>
+                )}
               </div>
               <Totals refreshKey={refreshTotals} />
             </motion.section>
@@ -348,11 +357,12 @@ function App() {
                     activeProject={activeProject}
                     activeTask={activeTask}
                     linkedTaskIds={linkedTaskIds}
+                    selectedTaskIds={selectedTaskIds}
                     onProjectSelect={setActiveProject}
                     onProjectAdded={handleProjectAdded}
                     onProjectDeleted={handleProjectDeleted}
-                    onLinkActiveTask={handleLinkActiveTaskToProject}
-                    onUnlinkActiveTask={handleUnlinkActiveTaskFromProject}
+                    onLinkSelectedTasks={handleLinkSelectedTasksToProject}
+                    onUnlinkSelectedTasks={handleUnlinkSelectedTasksFromProject}
                   />
                 </div>
                 <div className="manage-panel manage-panel-tasks">
@@ -368,7 +378,9 @@ function App() {
                     activeProject={activeProject}
                     activeTask={activeTask}
                     linkedTaskIds={linkedTaskIds}
+                    selectedTaskIds={selectedTaskIds}
                     onTaskSelect={handleTaskSelect}
+                    onToggleTaskSelection={handleToggleTaskSelection}
                     onTaskAdded={handleTaskAdded}
                     onTaskDeleted={handleTaskDeleted}
                     onTaskLinked={() =>
