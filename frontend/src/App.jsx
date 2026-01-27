@@ -78,7 +78,9 @@ function App() {
   useEffect(() => {
     if (activeProject?.id) {
       fetchProjectTasks(activeProject.id);
-      setActiveTask(null);
+      if (!activeProject.is_builtin) {
+        setActiveTask(null);
+      }
     } else {
       setLinkedTaskIds([]);
       setActiveTask(null);
@@ -160,7 +162,11 @@ function App() {
 
   const handleTaskSelect = async (task) => {
     if (!task) return;
-    if (activeProject?.id && !linkedTaskIds.includes(task.id)) {
+    if (
+      activeProject?.id &&
+      !linkedTaskIds.includes(task.id) &&
+      !activeProject.is_builtin
+    ) {
       try {
         const response = await fetch(
           `/api/projects/${activeProject.id}/tasks/${task.id}`,
@@ -177,6 +183,44 @@ function App() {
       }
     }
     setActiveTask(task);
+  };
+
+  const handleLinkActiveTaskToProject = async () => {
+    if (!activeProject?.id || !activeTask?.id) return;
+    if (linkedTaskIds.includes(activeTask.id)) return;
+    try {
+      const response = await fetch(
+        `/api/projects/${activeProject.id}/tasks/${activeTask.id}`,
+        { method: "POST" }
+      );
+      if (!response.ok) {
+        const data = await response.json();
+        console.error("Link task error:", data.error);
+        return;
+      }
+      fetchProjectTasks(activeProject.id);
+    } catch (error) {
+      console.error("Error linking task:", error);
+    }
+  };
+
+  const handleUnlinkActiveTaskFromProject = async () => {
+    if (!activeProject?.id || !activeTask?.id) return;
+    if (!linkedTaskIds.includes(activeTask.id)) return;
+    try {
+      const response = await fetch(
+        `/api/projects/${activeProject.id}/tasks/${activeTask.id}`,
+        { method: "DELETE" }
+      );
+      if (!response.ok) {
+        const data = await response.json();
+        console.error("Unlink task error:", data.error);
+        return;
+      }
+      fetchProjectTasks(activeProject.id);
+    } catch (error) {
+      console.error("Error unlinking task:", error);
+    }
   };
 
   const handleTimerStarted = () => {
@@ -258,6 +302,7 @@ function App() {
                 activeTask={activeTask}
                 activeProject={activeProject}
                 tasks={tasks}
+                onTaskSelect={handleTaskSelect}
                 onTimerStarted={handleTimerStarted}
                 onTimerEnded={handleTimerEnded}
               />
@@ -301,9 +346,13 @@ function App() {
                   <ProjectManager
                     projects={projects}
                     activeProject={activeProject}
+                    activeTask={activeTask}
+                    linkedTaskIds={linkedTaskIds}
                     onProjectSelect={setActiveProject}
                     onProjectAdded={handleProjectAdded}
                     onProjectDeleted={handleProjectDeleted}
+                    onLinkActiveTask={handleLinkActiveTaskToProject}
+                    onUnlinkActiveTask={handleUnlinkActiveTaskFromProject}
                   />
                 </div>
                 <div className="manage-panel manage-panel-tasks">
