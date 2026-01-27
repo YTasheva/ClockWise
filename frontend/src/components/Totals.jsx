@@ -4,6 +4,7 @@ import { BarChart3, Layers, ListChecks } from "lucide-react";
 
 function Totals({ refreshKey }) {
   const [totals, setTotals] = useState(null);
+  const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -13,9 +14,14 @@ function Totals({ refreshKey }) {
   const fetchTotals = async () => {
     try {
       setLoading(true);
-      const response = await fetch("/api/totals");
-      const data = await response.json();
-      setTotals(data);
+      const [totalsRes, entriesRes] = await Promise.all([
+        fetch("/api/totals"),
+        fetch("/api/timesheet/entries"),
+      ]);
+      const totalsData = await totalsRes.json();
+      const entriesData = await entriesRes.json();
+      setTotals(totalsData);
+      setEntries(Array.isArray(entriesData) ? entriesData : []);
     } catch (error) {
       console.error("Error fetching totals:", error);
     } finally {
@@ -46,6 +52,12 @@ function Totals({ refreshKey }) {
   if (!hasData) {
     return <div className="no-data">No time entries recorded yet</div>;
   }
+
+  const formatTime = (timestamp) =>
+    new Date(timestamp).toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
 
   return (
     <div>
@@ -163,6 +175,53 @@ function Totals({ refreshKey }) {
                 ))}
               </tbody>
             </table>
+          </motion.div>
+        )}
+
+        {/* Today's Entries */}
+        {entries.length > 0 && (
+          <motion.div
+            className="totals-table-wrapper"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, delay: 0.15 }}
+          >
+            <details className="totals-accordion">
+              <summary>
+                <span>Today's Entries (Chronological)</span>
+                <span className="totals-accordion-count">
+                  {entries.length} entries
+                </span>
+              </summary>
+              <div className="totals-accordion-body">
+                <table className="totals-table">
+                  <thead>
+                    <tr>
+                      <th>Task</th>
+                      <th>Time</th>
+                      <th style={{ textAlign: "right" }}>Duration</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {entries.map((entry) => (
+                      <tr key={entry.id}>
+                        <td>{entry.task_name}</td>
+                        <td>
+                          {formatTime(entry.start_time)} –{" "}
+                          {formatTime(entry.end_time)}
+                        </td>
+                        <td
+                          style={{ textAlign: "right" }}
+                          className="duration-cell"
+                        >
+                          {formatDuration(entry.overlap_minutes)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </details>
           </motion.div>
         )}
       </div>
