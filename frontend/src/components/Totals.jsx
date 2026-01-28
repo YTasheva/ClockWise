@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { BarChart3, Layers, ListChecks } from "lucide-react";
 
@@ -6,6 +6,8 @@ function Totals({ refreshKey }) {
   const [totals, setTotals] = useState(null);
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [entriesOpen, setEntriesOpen] = useState(false);
+  const entriesBodyRef = useRef(null);
 
   useEffect(() => {
     fetchTotals();
@@ -36,6 +38,23 @@ function Totals({ refreshKey }) {
     return `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}`;
   };
 
+  const formatTime = (timestamp) =>
+    new Date(timestamp).toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+  useEffect(() => {
+    const el = entriesBodyRef.current;
+    if (!el) return;
+    if (entriesOpen) {
+      const nextHeight = el.scrollHeight;
+      el.style.maxHeight = `${nextHeight}px`;
+    } else {
+      el.style.maxHeight = "0px";
+    }
+  }, [entriesOpen, entries.length]);
+
   if (loading) {
     return <div className="no-data">Loading...</div>;
   }
@@ -52,12 +71,6 @@ function Totals({ refreshKey }) {
   if (!hasData) {
     return <div className="no-data">No time entries recorded yet</div>;
   }
-
-  const formatTime = (timestamp) =>
-    new Date(timestamp).toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
 
   return (
     <div>
@@ -186,14 +199,18 @@ function Totals({ refreshKey }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25, delay: 0.15 }}
           >
-            <details className="totals-accordion">
+            <details
+              className="totals-accordion"
+              open={entriesOpen}
+              onToggle={(event) => setEntriesOpen(event.currentTarget.open)}
+            >
               <summary>
                 <span>Today's Entries (Chronological)</span>
                 <span className="totals-accordion-count">
                   {entries.length} entries
                 </span>
               </summary>
-              <div className="totals-accordion-body">
+              <div className="totals-accordion-body" ref={entriesBodyRef}>
                 <table className="totals-table">
                   <thead>
                     <tr>
