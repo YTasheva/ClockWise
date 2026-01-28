@@ -3,12 +3,16 @@ import { motion } from "framer-motion";
 import {
   CalendarDays,
   FolderKanban,
+  Globe,
   LayoutGrid,
   ListChecks,
+  Mail,
   Moon,
+  Linkedin,
   Sun,
 } from "lucide-react";
 import clockIcon from "./clockwise.logo.png";
+import bannerImage from "./clockwise-banner.png";
 import ProjectManager from "./components/ProjectManager";
 import TaskManager from "./components/TaskManager";
 import Timer from "./components/Timer";
@@ -55,6 +59,17 @@ function App() {
     hidden: { opacity: 0, y: 18 },
     show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
   };
+
+  const heroVariants = {
+    hidden: { opacity: 0, y: 14 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+  };
+
+  const heroChildVariants = {
+    hidden: { opacity: 0, y: 10 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+  };
+
 
   // Fetch projects
   useEffect(() => {
@@ -212,44 +227,67 @@ function App() {
         animate="show"
       >
         <div className="container-lg header-bar">
-          <div className="brand">
-            <div>
-              <h1>
-                <img
-                  src={clockIcon}
-                  alt=""
-                  className="title-icon-image"
-                  aria-hidden="true"
-                />
-                ClockWise
-              </h1>
-              <p>Time Tracking Application</p>
-            </div>
-          </div>
-          <div className="header-actions">
-            <TimesheetExport />
-            <button
-              type="button"
-              className="theme-toggle"
-              onClick={() =>
-                setTheme((prev) => (prev === "dark" ? "light" : "dark"))
-              }
-            >
-              <span className="btn-icon" aria-hidden="true">
-                {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
-              </span>
-              {theme === "dark" ? "Light Scene" : "Dark Scene"}
-            </button>
-            <div className="date-pill">
-              <CalendarDays size={16} />
-              <span>{dateLabel}</span>
-            </div>
-          </div>
+          <nav className="app-nav">
+            <motion.div className="brand" variants={cardVariants}>
+              <div>
+                <h1>
+                  <img
+                    src={clockIcon}
+                    alt=""
+                    className="title-icon-image"
+                    aria-hidden="true"
+                  />
+                  ClockWise
+                </h1>
+                <p>Time Tracking Application</p>
+              </div>
+            </motion.div>
+            <motion.div className="header-actions" variants={cardVariants}>
+              <TimesheetExport />
+              <button
+                type="button"
+                className="theme-toggle"
+                onClick={() =>
+                  setTheme((prev) => (prev === "dark" ? "light" : "dark"))
+                }
+              >
+                <span className="btn-icon" aria-hidden="true">
+                  {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+                </span>
+                {theme === "dark" ? "Light Scene" : "Dark Scene"}
+              </button>
+              <div className="date-pill">
+                <CalendarDays size={16} />
+                <span>{dateLabel}</span>
+              </div>
+            </motion.div>
+          </nav>
         </div>
       </motion.header>
 
       <main className="app-main">
         <div className="container-lg">
+          <motion.section
+            className="hero"
+            variants={heroVariants}
+            initial="hidden"
+            animate="show"
+          >
+            <motion.div className="hero-content" variants={heroChildVariants}>
+              <h2>Track focused work, beautifully.</h2>
+              <p>
+                Link a task to a project, start the timer, and review clean daily
+                summaries with a single export.
+              </p>
+            </motion.div>
+            <motion.div className="hero-media" variants={heroChildVariants}>
+              <img
+                src={bannerImage}
+                alt="ClockWise hero banner"
+                className="hero-banner"
+              />
+            </motion.div>
+          </motion.section>
           <motion.div
             className="dashboard-grid"
             variants={gridVariants}
@@ -342,9 +380,37 @@ function App() {
       </main>
       <footer className="app-footer">
         <div className="container-lg">
-          <span>
-            © {new Date().getFullYear()} Yuliya Tasheva
-          </span>
+          <div className="footer-content">
+            <div className="footer-brand">
+              <h4>ClockWise</h4>
+              <p>Time Tracking Application</p>
+              <span>© {new Date().getFullYear()} Yuliya Tasheva</span>
+            </div>
+            <div className="footer-links">
+              <a href="mailto:info@yuliya-tasheva.co.uk" className="footer-link">
+                <Mail size={16} aria-hidden="true" />
+                info@yuliya-tasheva.co.uk
+              </a>
+              <a
+                href="https://yuliya-tasheva.co.uk"
+                className="footer-link"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <Globe size={16} aria-hidden="true" />
+                yuliya-tasheva.co.uk
+              </a>
+              <a
+                href="https://www.linkedin.com/company/yuliya-stella-tasheva"
+                className="footer-link"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <Linkedin size={16} aria-hidden="true" />
+                LinkedIn
+              </a>
+            </div>
+          </div>
         </div>
       </footer>
     </div>
