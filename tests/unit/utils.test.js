@@ -18,7 +18,12 @@ describe("Utility Functions", () => {
 
     it("should return today's date when time is after 4 AM", () => {
       const date = getTodayDate();
-      const expectedDate = new Date().toISOString().split("T")[0];
+      const now = new Date();
+      const expected = new Date(now);
+      if (now.getHours() < 4) {
+        expected.setDate(expected.getDate() - 1);
+      }
+      const expectedDate = expected.toISOString().split("T")[0];
       expect(date).toBe(expectedDate);
     });
   });
