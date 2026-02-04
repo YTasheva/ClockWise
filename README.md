@@ -77,7 +77,7 @@ A web-based time tracking application that helps you keep track of how much time
 
 ## Links
 
-- [Deployed Application](https://)
+- [Deployed Application](https://clockwise-frontend.onrender.com/)
 - [GitHub Repo](https://github.com/YTasheva/ClockWise)
 
 ## Quick Start

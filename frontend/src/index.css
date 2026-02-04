@@ -244,6 +244,14 @@ body::before {
   line-height: 1.6;
 }
 
+body[data-theme="dark"] .hero-content h2 {
+  color: #f6eee6;
+}
+
+body[data-theme="dark"] .hero-content p {
+  color: rgba(246, 238, 230, 0.75);
+}
+
 .hero-media {
   display: flex;
   justify-content: flex-end;
