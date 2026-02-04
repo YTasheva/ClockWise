@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { ListChecks, Pencil, Plus, Trash2 } from "lucide-react";
+import { apiFetch } from "../utils/api";
 
 function TaskManager({
   tasks,
@@ -33,7 +34,7 @@ function TaskManager({
     }
 
     try {
-      const response = await fetch("/api/tasks", {
+      const response = await apiFetch("/api/tasks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: newTaskName }),
@@ -67,7 +68,7 @@ function TaskManager({
     }
 
     try {
-      const response = await fetch(`/api/tasks/${id}`, {
+      const response = await apiFetch(`/api/tasks/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: newName }),
@@ -92,7 +93,9 @@ function TaskManager({
     setError("");
 
     try {
-      const response = await fetch(`/api/tasks/${id}`, { method: "DELETE" });
+      const response = await apiFetch(`/api/tasks/${id}`, {
+        method: "DELETE",
+      });
 
       if (!response.ok) {
         const data = await response.json();
@@ -122,7 +125,7 @@ function TaskManager({
         taskId: isLinked ? null : task.id,
         optimistic: true,
       });
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/projects/${activeProject.id}/tasks/${task.id}`,
         { method: isLinked ? "DELETE" : "POST" }
       );
