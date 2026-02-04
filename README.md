@@ -73,7 +73,8 @@ A web-based time tracking application that helps you keep track of how much time
 
 ## Screenshot
 
-<img width="1497" alt="Screenshot" src="https://github.com/YTasheva/ClockWise/blob/main/frontend/src/screenshot2.jpg">
+<img width="1497" alt="Screenshot" src="https://github.com/YTasheva/ClockWise/blob/main/frontend/src/screenshot-clocwise1.jpg">
+<img width="1497" alt="Screenshot" src="https://github.com/YTasheva/ClockWise/blob/main/frontend/src/screenshot-clocwise2.jpg">
 
 ## Links
 
