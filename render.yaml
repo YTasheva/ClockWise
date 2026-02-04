@@ -2,7 +2,7 @@ services:
   - type: web
     name: clockwise-backend
     runtime: node
-    plan: starter
+    plan: free
     rootDir: backend
     buildCommand: npm install
     startCommand: npm run start
@@ -19,7 +19,7 @@ services:
   - type: web
     name: clockwise-frontend
     runtime: static
-    plan: starter
+    plan: free
     rootDir: frontend
     buildCommand: npm install && npm run build
     staticPublishPath: dist
