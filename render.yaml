@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: clockwise-backend
+    runtime: node
+    plan: starter
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm run start
+    envVars:
+      - key: NODE_VERSION
+        value: 18
+      - key: CLOCKWISE_DB_DIR
+        value: /var/data
+    disk:
+      name: clockwise-data
+      mountPath: /var/data
+      sizeGB: 1
+
+  - type: web
+    name: clockwise-frontend
+    runtime: static
+    plan: starter
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: clockwise-backend
+          envVarKey: RENDER_EXTERNAL_URL
