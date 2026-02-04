@@ -10,10 +10,9 @@ services:
       - key: NODE_VERSION
         value: 18
 
-  - type: web
+  - type: static
     name: clockwise-frontend
     runtime: static
-    plan: free
     rootDir: frontend
     buildCommand: npm install && npm run build
     staticPublishPath: dist
