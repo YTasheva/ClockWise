@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Activity, FolderKanban, ListChecks, Play, Square } from "lucide-react";
+import { apiFetch } from "../utils/api";
 
 function Timer({
   currentTimer,
@@ -83,7 +84,7 @@ function Timer({
     }
 
     try {
-      const response = await fetch("/api/timer/start", {
+      const response = await apiFetch("/api/timer/start", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ task_id: taskId }),
@@ -103,7 +104,7 @@ function Timer({
 
   const handleEndTimer = async () => {
     try {
-      const response = await fetch("/api/timer/end", { method: "POST" });
+      const response = await apiFetch("/api/timer/end", { method: "POST" });
 
       if (!response.ok) {
         const data = await response.json();
@@ -129,7 +130,7 @@ function Timer({
 
     if (activeProject?.id && !linkedTaskIds.includes(task.id)) {
       try {
-        const response = await fetch(
+        const response = await apiFetch(
           `/api/projects/${activeProject.id}/tasks/${task.id}`,
           { method: "POST" }
         );
