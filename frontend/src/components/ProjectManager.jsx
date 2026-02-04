@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { FolderKanban, Pencil, Plus, Trash2 } from "lucide-react";
+import { apiFetch } from "../utils/api";
 
 function ProjectManager({
   projects,
@@ -29,7 +30,7 @@ function ProjectManager({
     }
 
     try {
-      const response = await fetch("/api/projects", {
+      const response = await apiFetch("/api/projects", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: newProjectName }),
@@ -62,7 +63,7 @@ function ProjectManager({
     }
 
     try {
-      const response = await fetch(`/api/projects/${id}`, {
+      const response = await apiFetch(`/api/projects/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: newName }),
@@ -87,7 +88,9 @@ function ProjectManager({
     setError("");
 
     try {
-      const response = await fetch(`/api/projects/${id}`, { method: "DELETE" });
+      const response = await apiFetch(`/api/projects/${id}`, {
+        method: "DELETE",
+      });
 
       if (!response.ok) {
         const data = await response.json();
