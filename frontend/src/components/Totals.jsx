@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { BarChart3, Layers, ListChecks } from "lucide-react";
+import { apiFetch } from "../utils/api";
 
 function Totals({ refreshKey }) {
   const [totals, setTotals] = useState(null);
@@ -17,8 +18,8 @@ function Totals({ refreshKey }) {
     try {
       setLoading(true);
       const [totalsRes, entriesRes] = await Promise.all([
-        fetch("/api/totals"),
-        fetch("/api/timesheet/entries"),
+        apiFetch("/api/totals"),
+        apiFetch("/api/timesheet/entries"),
       ]);
       const totalsData = await totalsRes.json();
       const entriesData = await entriesRes.json();
