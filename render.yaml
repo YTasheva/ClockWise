@@ -10,7 +10,7 @@ services:
       - key: NODE_VERSION
         value: 18
 
-  - type: static
+  - type: web
     name: clockwise-frontend
     runtime: static
     rootDir: frontend
