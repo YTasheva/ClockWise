@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { FileDown } from "lucide-react";
+import { apiFetch } from "../utils/api";
 
 function TimesheetExport() {
   const [loading, setLoading] = useState(false);
@@ -30,8 +31,8 @@ function TimesheetExport() {
 
       // Fetch all necessary data
       const [totalsRes, entriesRes] = await Promise.all([
-        fetch("/api/totals"),
-        fetch("/api/timesheet/entries"),
+        apiFetch("/api/totals"),
+        apiFetch("/api/timesheet/entries"),
       ]);
 
       if (!totalsRes.ok || !entriesRes.ok) {
