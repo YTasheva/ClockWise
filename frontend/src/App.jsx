@@ -18,6 +18,7 @@ import TaskManager from "./components/TaskManager";
 import Timer from "./components/Timer";
 import Totals from "./components/Totals";
 import TimesheetExport from "./components/TimesheetExport";
+import { apiFetch } from "./utils/api";
 
 function App() {
   const getInitialTheme = () => {
@@ -115,7 +116,7 @@ function App() {
   const fetchProjects = async () => {
     try {
       console.log("Fetching projects from /api/projects");
-      const response = await fetch("/api/projects");
+      const response = await apiFetch("/api/projects");
       const data = await response.json();
       console.log("Projects fetched:", data);
       setProjects(data);
@@ -127,7 +128,7 @@ function App() {
 
   const fetchTasks = async () => {
     try {
-      const response = await fetch("/api/tasks");
+      const response = await apiFetch("/api/tasks");
       const data = await response.json();
       setTasks(data);
     } catch (error) {
@@ -137,7 +138,7 @@ function App() {
 
   const fetchProjectTasks = async (projectId) => {
     try {
-      const response = await fetch(`/api/projects/${projectId}/tasks`);
+      const response = await apiFetch(`/api/projects/${projectId}/tasks`);
       const data = await response.json();
       setLinkedTaskIds(data.map((task) => task.id));
     } catch (error) {
@@ -147,7 +148,7 @@ function App() {
 
   const fetchCurrentTimer = async () => {
     try {
-      const response = await fetch("/api/timer/current");
+      const response = await apiFetch("/api/timer/current");
       const data = await response.json();
       setCurrentTimer(data);
     } catch (error) {
